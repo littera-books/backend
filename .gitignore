@@ -1,3 +1,6 @@
+# Custom
+.secrets.json
+.secrets.tar
 
 # Created by https://www.gitignore.io/api/macos,python,visualstudiocode
 

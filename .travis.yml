@@ -1,15 +1,15 @@
 language: python
-
 os:
-  - linux
-
+- linux
 python:
-  - "3.6"
-  - "3.7-dev"
-
+- '3.6'
+- 3.7-dev
+before_install:
+- openssl aes-256-cbc -K $encrypted_51f2620d1008_key -iv $encrypted_51f2620d1008_iv
+  -in .secrets.tar.enc -out .secrets.tar -d
+- tar xvf .secrets.tar
 install:
-  - pip install -r requirements/development.txt
-  - pip install -r requirements/test.txt
-
+- pip install -r requirements/development.txt
+- pip install -r requirements/test.txt
 script:
-  - pytest
+- pytest
