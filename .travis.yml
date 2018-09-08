@@ -7,14 +7,7 @@ python:
 - '3.6'
 - 3.7-dev
 addons:
-  postgresql: '10'
-  apt:
-    packages:
-    - postgresql-10
-    - postgresql-client-10
-env:
-  global:
-  - PGPORT=5433
+  postgresql: '9.6'
 install:
 - pip install -r requirements/development.txt
 - pip install -r requirements/test.txt
