@@ -1,5 +1,4 @@
 aiohttp==3.4.4
-aiopg==0.15.0
 passlib==1.7.1
 psycopg2==2.7.5
 sanic==0.8.1
