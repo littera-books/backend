@@ -9,6 +9,17 @@ APP = Sanic(__name__)
 APP.add_route(UserView.as_view(), '/user')
 
 
+@APP.listener('before_server_start')
+async def setup_db(app, loop):
+    # Base에 연결된 모든 테이블 매핑
+    Base.metadata.create_all(bind=engine)
+
+
+@APP.listener('after_server_start')
+async def notify_server_started(app, loop):
+    print('\nWelcome Littera API server\n')
+
+
 @APP.route('/')
 async def main(request):
     """
@@ -18,5 +29,4 @@ async def main(request):
 
 
 if __name__ == '__main__':
-    Base.metadata.create_all(bind=engine)  # Base에 연결된 모든 테이블 매핑
     APP.run(host='localhost', port=8000)
