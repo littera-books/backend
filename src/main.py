@@ -2,7 +2,6 @@ from sanic import Sanic
 from sanic.response import text
 
 from common.database import Base, engine
-
 from user.api import UserView
 
 APP = Sanic(__name__)

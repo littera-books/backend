@@ -1,10 +1,7 @@
 from sanic.views import HTTPMethodView
 from sanic.response import json
 
-from sqlalchemy_utils import Password
-
 from common.database import db_session
-
 from .model import User
 
 
