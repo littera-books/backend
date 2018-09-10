@@ -6,8 +6,14 @@ from main import APP
 
 class TestUser(unittest.TestCase):
     def setUp(self):
-        self.data = {'email': 'dummy@test.com', 'password': '1234'}
-        self.wrong_data = {'email': 'dummy@test.com', 'password': '4321'}
+        self.data = {
+            'username': 'dummy',
+            'email': 'dummy@test.com',
+            'password': '1234'}
+        self.wrong_data = {
+            'username': 'dummy',
+            'email': 'dummy@test.com',
+            'password': '4321'}
 
     def tearDown(self):
         """

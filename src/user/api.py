@@ -14,31 +14,30 @@ class UserView(HTTPMethodView):
         """
         회원 가입
         """
-        email = request.json['email']
-        password = request.json['password']
+        data = request.json
 
-        user = User(email=email, password=password)
+        user = User(**data)
         db_session.add(user)
         db_session.commit()
         db_session.flush()
-        result = db_session.query(User).filter_by(email=email).first()
 
-        return json(
-            {
-                'email': result.email,
-                'password': result.password
-            }, status=201)
+        result = db_session.query(User).filter_by(username=data['username']).first()
+
+        return json({
+            'username': result.username,
+            'email': result.email,
+            'password': result.password
+        }, status=201)
 
     async def delete(self, request):
         """
         회원 탈퇴
         """
-        email = request.json['email']
-        password = request.json['password']
+        data = request.json
 
-        user = db_session.query(User).filter_by(email=email).first()
+        user = db_session.query(User).filter_by(username=data['username']).first()
 
-        if user.password == password:
+        if user.password == data['password']:
             db_session.delete(user)
             db_session.commit()
             db_session.flush()

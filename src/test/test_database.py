@@ -12,16 +12,19 @@ class TestDB(unittest.TestCase):
         self.sessionmaker = sessionmaker(bind=self.engine)
         self.session = self.sessionmaker()
         self.base = Base
-        self.data = {'email': 'abc@abc.com', 'password': 'dummy'}
+        self.data = {
+            'username': 'qwerty',
+            'email': 'abc@abc.com',
+            'password': 'dummy'}
         Base.metadata.create_all(bind=self.engine)
 
     def test_user_create(self):
         """
         DB에서 유저 생성 테스트
         """
-        dummy_user = User(
-            email=self.data['email'], password=self.data['password'])
+        dummy_user = User(**self.data)
         self.session.add(dummy_user)
+
         query_user = self.session.query(User).filter_by(
             email=self.data['email']).first()
         self.assertEqual(dummy_user, query_user)
@@ -30,12 +33,13 @@ class TestDB(unittest.TestCase):
         """
         DB에서 유저 삭제 테스트
         """
-        dummy_user = User(
-            email=self.data['email'], password=self.data['password'])
+        dummy_user = User(**self.data)
         self.session.add(dummy_user)
+
         query_user = self.session.query(User).filter_by(
             email=self.data['email']).first()
         self.session.delete(query_user)
+
         is_exists = self.session.query(User).filter_by(
             email=self.data['email']).count()
         self.assertEqual(is_exists, 0)
