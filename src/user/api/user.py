@@ -2,7 +2,7 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
-from .model import User
+from user.model import User
 
 
 class UserView(HTTPMethodView):
