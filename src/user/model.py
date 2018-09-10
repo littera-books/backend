@@ -10,6 +10,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(length=32), unique=True, nullable=False)
     email = Column(EmailType, unique=True, nullable=False)
+    phone = Column(String(length=11), unique=True, nullable=False)
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

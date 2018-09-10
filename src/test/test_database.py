@@ -15,6 +15,7 @@ class TestDB(unittest.TestCase):
         self.data = {
             'username': 'qwerty',
             'email': 'abc@abc.com',
+            'phone': '01012345678',
             'password': 'dummy'}
         Base.metadata.create_all(bind=self.engine)
 

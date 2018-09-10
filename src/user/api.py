@@ -8,6 +8,9 @@ from .model import User
 class UserView(HTTPMethodView):
     """
     유저 관련 메서드 집합
+    1. POST: 회원 가입
+    2. PATCH: 정보 수정
+    3. DELETE: 회원 탈퇴
     """
 
     async def post(self, request):
@@ -20,12 +23,14 @@ class UserView(HTTPMethodView):
         db_session.add(user)
         db_session.commit()
         db_session.flush()
+        db_session.close()
 
         result = db_session.query(User).filter_by(username=data['username']).first()
 
         return json({
             'username': result.username,
             'email': result.email,
+            'phone': result.phone,
             'password': result.password
         }, status=201)
 
@@ -41,6 +46,7 @@ class UserView(HTTPMethodView):
             db_session.delete(user)
             db_session.commit()
             db_session.flush()
+            db_session.close()
             return json(None, status=204)
 
         return json({'message': '유저 정보가 맞지 않습니다.'}, status=400)

@@ -9,10 +9,12 @@ class TestUser(unittest.TestCase):
         self.data = {
             'username': 'dummy',
             'email': 'dummy@test.com',
+            'phone': '01012345678',
             'password': '1234'}
         self.wrong_data = {
             'username': 'dummy',
             'email': 'dummy@test.com',
+            'phone': '01012345678',
             'password': '4321'}
 
     def tearDown(self):
