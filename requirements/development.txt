@@ -2,5 +2,6 @@ aiohttp==3.4.4
 passlib==1.7.1
 psycopg2==2.7.5
 sanic==0.8.1
+sanic-jwt==1.1.4
 SQLAlchemy==1.2.11
 SQLAlchemy-Utils==0.33.3
