@@ -21,7 +21,14 @@ class TestUser(unittest.TestCase):
             'username': 'dummy',
             'email': 'dummy@test.com',
             'phone': '01012345678',
-            'password': '4321'}
+            'password': '4321'
+        }
+        self.empty_data = {
+            'username': '',
+            'email': '',
+            'phone': '',
+            'password': ''
+        }
 
     def tearDown(self):
         """
@@ -30,18 +37,27 @@ class TestUser(unittest.TestCase):
         request, response = APP.test_client.delete(
             '/user', data=json.dumps(self.data))
 
-    def test_user_create(self):
+    def test_user_create_succeed(self):
         """
-        url에서 유저 생성 테스트
+        url에서 유저 생성 테스트 성공
         """
         request, response = APP.test_client.post(
             '/user', data=json.dumps(self.data))
         self.assertEqual(response.status, 201)
         self.assertEqual(response.json.get('email'), self.data['email'])
 
-    def test_user_patch(self):
+    def test_user_create_failed_input_empty(self):
         """
-        url에서 유저 정보 수정 테스트
+        url에서 유저 생성 테스트 실패: 입력값 없음
+        """
+        request, response = APP.test_client.post(
+            '/user', data=json.dumps(self.empty_data))
+        self.assertEqual(response.status, 400)
+        self.assertEqual(response.json.get('message'), '정보를 모두 입력해주세요')
+
+    def test_user_patch_succeed(self):
+        """
+        url에서 유저 정보 수정 테스트 성공
         """
         request, response = APP.test_client.post(
             '/user', data=json.dumps(self.data))
@@ -51,15 +67,33 @@ class TestUser(unittest.TestCase):
         self.assertEqual(response.json.get('email'), self.patch_data['email'])
         self.assertEqual(response.json.get('phone'), self.patch_data['phone'])
 
-    def test_user_delete(self):
+    def test_user_patch_failed_input_empty(self):
         """
-        url에서 유저 올바른 삭제 테스트
+        url에서 유저 정보 수정 테스트 실패: 입력값 없음
+        """
+        request, response = APP.test_client.patch(
+            '/user', data=json.dumps(self.empty_data))
+        self.assertEqual(response.status, 400)
+        self.assertEqual(response.json.get('message'), '정보를 모두 입력해주세요')
+
+    def test_user_delete_succeed(self):
+        """
+        url에서 유저 삭제 테스트 성공
         """
         equest, response = APP.test_client.post(
             '/user', data=json.dumps(self.data))
         request, response = APP.test_client.delete(
             '/user', data=json.dumps(self.data))
         self.assertEqual(response.status, 204)
+
+    def test_user_delete_failed_input_empty(self):
+        """
+        url에서 유저 삭제 테스트 실패: 입력값 없음
+        """
+        request, response = APP.test_client.delete(
+            '/user', data=json.dumps(self.empty_data))
+        self.assertEqual(response.status, 400)
+        self.assertEqual(response.json.get('message'), '정보를 모두 입력해주세요')
 
     def test_user_wrong_password_delete(self):
         """

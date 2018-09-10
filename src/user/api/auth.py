@@ -8,10 +8,8 @@ async def authenticate(request, *args, **kwargs):
     """
     로그인 시 유저 정보가 담긴 JWT 를 전달해주는 메서드
     """
-    data = request.json
-
-    username = data.get('username', None)
-    password = data.get('password', None)
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
 
     if not username or not password:
         raise exceptions.AuthenticationFailed('아이디나 비밀번호를 입력해주세요')
