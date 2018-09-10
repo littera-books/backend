@@ -17,6 +17,11 @@ class TestDB(unittest.TestCase):
             'email': 'abc@abc.com',
             'phone': '01012345678',
             'password': 'dummy'}
+        self.patch_data = {
+            'email': 'dfg@dfg.com',
+            'phone': '01098765432',
+            'password': 'chubby'
+        }
         Base.metadata.create_all(bind=self.engine)
 
     def test_user_create(self):
@@ -27,8 +32,26 @@ class TestDB(unittest.TestCase):
         self.session.add(dummy_user)
 
         query_user = self.session.query(User).filter_by(
-            email=self.data['email']).first()
+            username=self.data['username']).first()
         self.assertEqual(dummy_user, query_user)
+
+    def test_user_patch(self):
+        """
+        DB에서 유저 정보 수정 테스트
+        """
+        dummy_user = User(**self.data)
+        self.session.add(dummy_user)
+
+        query_user = self.session.query(User).filter_by(
+            username=self.data['username']).first()
+
+        query_user.email = self.patch_data['email']
+        query_user.phone = self.patch_data['phone']
+        query_user.password = self.patch_data['password']
+
+        self.assertNotEqual(query_user.email, self.data['email'])
+        self.assertNotEqual(query_user.phone, self.data['phone'])
+        self.assertNotEqual(query_user.password, self.data['password'])
 
     def test_user_delete(self):
         """
@@ -38,9 +61,9 @@ class TestDB(unittest.TestCase):
         self.session.add(dummy_user)
 
         query_user = self.session.query(User).filter_by(
-            email=self.data['email']).first()
+            username=self.data['username']).first()
         self.session.delete(query_user)
 
         is_exists = self.session.query(User).filter_by(
-            email=self.data['email']).count()
+            username=self.data['username']).count()
         self.assertEqual(is_exists, 0)

@@ -11,6 +11,12 @@ class TestUser(unittest.TestCase):
             'email': 'dummy@test.com',
             'phone': '01012345678',
             'password': '1234'}
+        self.patch_data = {
+            'username': 'dummy',
+            'email': 'chubby@test.com',
+            'phone': '01098765432',
+            'password': '1234'
+        }
         self.wrong_data = {
             'username': 'dummy',
             'email': 'dummy@test.com',
@@ -32,6 +38,18 @@ class TestUser(unittest.TestCase):
             '/user', data=json.dumps(self.data))
         self.assertEqual(response.status, 201)
         self.assertEqual(response.json.get('email'), self.data['email'])
+
+    def test_user_patch(self):
+        """
+        url에서 유저 정보 수정 테스트
+        """
+        request, response = APP.test_client.post(
+            '/user', data=json.dumps(self.data))
+        request, response = APP.test_client.patch(
+            '/user', data=json.dumps(self.patch_data))
+        self.assertEqual(response.status, 200)
+        self.assertEqual(response.json.get('email'), self.patch_data['email'])
+        self.assertEqual(response.json.get('phone'), self.patch_data['phone'])
 
     def test_user_delete(self):
         """

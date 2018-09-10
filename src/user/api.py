@@ -34,6 +34,28 @@ class UserView(HTTPMethodView):
             'password': result.password
         }, status=201)
 
+    async def patch(self, request):
+        """
+        회원 정보 수정
+        """
+        data = request.json
+
+        user = db_session.query(User).filter_by(username=data['username']).first()
+
+        user.email = data['email']
+        user.phone = data['phone']
+        user.password = data['password']
+
+        db_session.commit()
+        db_session.flush()
+
+        return json({
+            'username': user.username,
+            'email': user.email,
+            'phone': user.phone,
+            'password': user.password
+        }, status=200)
+
     async def delete(self, request):
         """
         회원 탈퇴
