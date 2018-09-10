@@ -16,3 +16,13 @@ class User(Base):
 
     def __repr__(self):
         return f'<User(username={self.username}, email={self.email})>'
+
+    def to_dict(self):
+        """
+        sanic-jwt 에 user 정보를 dict 형태로 전달하는 메서드
+        """
+        return {
+            'user_id': self.id,
+            'username': self.username,
+            'email': self.email
+        }

@@ -1,13 +1,15 @@
 from sanic import Sanic
 from sanic.response import text
+from sanic_jwt import initialize
 
 from common.database import Base, engine
 from user.api.user import UserView
-from user.api.auth import AuthView
+from user.api.auth import authenticate, payload_extender
 
 APP = Sanic(__name__)
 APP.add_route(UserView.as_view(), '/user')
-APP.add_route(AuthView.as_view(), '/auth')
+initialize(APP, authenticate=authenticate, extend_payload=payload_extender)
+
 
 @APP.listener('before_server_start')
 async def setup_db(app, loop):
