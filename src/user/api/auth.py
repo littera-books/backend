@@ -1,6 +1,7 @@
 from sanic_jwt import exceptions
 
 from common.database import db_session
+from user import EXCEPTION_MESSAGE
 from user.model import User
 
 
@@ -12,15 +13,15 @@ async def authenticate(request, *args, **kwargs):
     password = request.json.get('password', None)
 
     if not username or not password:
-        raise exceptions.AuthenticationFailed('아이디나 비밀번호를 입력해주세요')
+        raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['empty_value'])
 
     user = db_session.query(User).filter_by(username=username).first()
 
     if user is None:
-        raise exceptions.AuthenticationFailed('유저 정보가 존재하지 않습니다')
+        raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['none_user'])
 
     if password != user.password:
-        raise exceptions.AuthenticationFailed('비밀번호가 일치하지 않습니다')
+        raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['invalid_password'])
 
     return user
 

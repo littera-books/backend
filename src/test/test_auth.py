@@ -2,6 +2,7 @@ import json
 import unittest
 
 from main import APP
+from user import EXCEPTION_MESSAGE
 
 
 class TestAuth(unittest.TestCase):
@@ -45,7 +46,7 @@ class TestAuth(unittest.TestCase):
                 'password': ''
             }))
         self.assertEqual(response.status, 401)
-        self.assertEqual(response.json['reasons'][0], '아이디나 비밀번호를 입력해주세요')
+        self.assertEqual(response.json['reasons'][0], EXCEPTION_MESSAGE['empty_value'])
 
     def test_user_login_failed_user_none(self):
         """
@@ -61,7 +62,7 @@ class TestAuth(unittest.TestCase):
                 'password': '1234'
             }))
         self.assertEqual(response.status, 401)
-        self.assertEqual(response.json['reasons'][0], '유저 정보가 존재하지 않습니다')
+        self.assertEqual(response.json['reasons'][0], EXCEPTION_MESSAGE['none_user'])
 
     def test_user_login_failed_password_diff(self):
         """
@@ -77,4 +78,4 @@ class TestAuth(unittest.TestCase):
                 'password': '4321'
             }))
         self.assertEqual(response.status, 401)
-        self.assertEqual(response.json['reasons'][0], '비밀번호가 일치하지 않습니다')
+        self.assertEqual(response.json['reasons'][0], EXCEPTION_MESSAGE['invalid_password'])

@@ -2,6 +2,7 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
+from user import EXCEPTION_MESSAGE
 from user.model import User
 
 
@@ -41,7 +42,7 @@ class UserView(HTTPMethodView):
 
         is_full = self.empty_validation(data)
         if is_full is False:
-            return json({'message': '정보를 모두 입력해주세요'}, status=400)
+            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
         user = User(**data)
         db_session.add(user)
@@ -65,11 +66,11 @@ class UserView(HTTPMethodView):
 
         is_full = self.empty_validation(data)
         if is_full is False:
-            return json({'message': '정보를 모두 입력해주세요'}, status=400)
+            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
         query_user = self.none_validation(data['username'])
         if query_user is None:
-            return json({'message': '존재하지 않는 유저입니다. 입력값을 확인해주세요'}, status=400)
+            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
         query_user.email = data['email']
         query_user.phone = data['phone']
@@ -92,14 +93,14 @@ class UserView(HTTPMethodView):
 
         is_full = self.empty_validation(data)
         if is_full is False:
-            return json({'message': '정보를 모두 입력해주세요'}, status=400)
+            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
         query_user = self.none_validation(data['username'])
         if query_user is None:
-            return json({'message': '존재하지 않는 유저입니다. 입력값을 확인해주세요'}, status=400)
+            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
         if query_user.password != data['password']:
-            return json({'message': '비밀번호가 맞지 않습니다'}, status=400)
+            return json({'message': EXCEPTION_MESSAGE['invalid_password']}, status=400)
 
         db_session.delete(query_user)
         db_session.commit()
