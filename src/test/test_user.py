@@ -37,6 +37,8 @@ class TestUser(unittest.TestCase):
         request, response = APP.test_client.delete(
             '/user', data=json.dumps(self.data))
 
+    #     유저 생성 테스트     #
+
     def test_user_create_succeed(self):
         """
         url에서 유저 생성 테스트 성공
@@ -55,12 +57,16 @@ class TestUser(unittest.TestCase):
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), '정보를 모두 입력해주세요')
 
+    #     유저 수정 테스트     #
+
     def test_user_patch_succeed(self):
         """
         url에서 유저 정보 수정 테스트 성공
         """
         request, response = APP.test_client.post(
             '/user', data=json.dumps(self.data))
+        self.assertEqual(response.status, 201)
+
         request, response = APP.test_client.patch(
             '/user', data=json.dumps(self.patch_data))
         self.assertEqual(response.status, 200)
@@ -75,6 +81,21 @@ class TestUser(unittest.TestCase):
             '/user', data=json.dumps(self.empty_data))
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), '정보를 모두 입력해주세요')
+
+    def test_user_patch_failed_none_user(self):
+        """
+        url에서 유저 정보 수정 테스트 실패: 유저 없음
+        """
+        request, response = APP.test_client.post(
+            '/user', data=json.dumps(self.data))
+        self.assertEqual(response.status, 201)
+
+        request, response = APP.test_client.patch(
+            '/user', data=json.dumps({'username': 'coffee'}))
+        self.assertEqual(response.status, 400)
+        self.assertEqual(response.json.get('message'), '존재하지 않는 유저입니다. 입력값을 확인해주세요')
+
+    #     유저 삭제 테스트     #
 
     def test_user_delete_succeed(self):
         """
@@ -95,7 +116,20 @@ class TestUser(unittest.TestCase):
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), '정보를 모두 입력해주세요')
 
-    def test_user_wrong_password_delete(self):
+    def test_user_delete_failed_none_user(self):
+        """
+        url에서 유저 삭제 테스트 실패: 유저 없음
+        """
+        request, response = APP.test_client.post(
+            '/user', data=json.dumps(self.data))
+        self.assertEqual(response.status, 201)
+
+        request, response = APP.test_client.delete(
+            '/user', data=json.dumps({'username': 'coffee'}))
+        self.assertEqual(response.status, 400)
+        self.assertEqual(response.json.get('message'), '존재하지 않는 유저입니다. 입력값을 확인해주세요')
+
+    def test_user_delete_failed_wrong_password(self):
         """
         url에서 유저 잘못된 패스워드 삭제 테스트
         """

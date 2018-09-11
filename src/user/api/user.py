@@ -24,14 +24,23 @@ class UserView(HTTPMethodView):
 
         return False if '' in data_set else True
 
+    @staticmethod
+    def none_validation(username):
+        """
+        세 가지 메서드에 대해 validation 수행
+        :param username: 쿼리를 찾으려는 username
+        :return: 존재하면 User 객체, 없으면 None
+        """
+        return db_session.query(User).filter_by(username=username).first()
+
     async def post(self, request):
         """
         회원 가입
         """
         data = request.json
-        is_empty = self.empty_validation(data)
 
-        if is_empty is False:
+        is_full = self.empty_validation(data)
+        if is_full is False:
             return json({'message': '정보를 모두 입력해주세요'}, status=400)
 
         user = User(**data)
@@ -40,13 +49,12 @@ class UserView(HTTPMethodView):
         db_session.flush()
         db_session.close()
 
-        result = db_session.query(User).filter_by(username=data['username']).first()
+        query_user = self.none_validation(data['username'])
 
         return json({
-            'username': result.username,
-            'email': result.email,
-            'phone': result.phone,
-            'password': result.password
+            'username': query_user.username,
+            'email': query_user.email,
+            'phone': query_user.phone
         }, status=201)
 
     async def patch(self, request):
@@ -54,25 +62,26 @@ class UserView(HTTPMethodView):
         회원 정보 수정
         """
         data = request.json
-        is_empty = self.empty_validation(data)
 
-        if is_empty is False:
+        is_full = self.empty_validation(data)
+        if is_full is False:
             return json({'message': '정보를 모두 입력해주세요'}, status=400)
 
-        user = db_session.query(User).filter_by(username=data['username']).first()
+        query_user = self.none_validation(data['username'])
+        if query_user is None:
+            return json({'message': '존재하지 않는 유저입니다. 입력값을 확인해주세요'}, status=400)
 
-        user.email = data['email']
-        user.phone = data['phone']
-        user.password = data['password']
+        query_user.email = data['email']
+        query_user.phone = data['phone']
+        query_user.password = data['password']
 
         db_session.commit()
         db_session.flush()
 
         return json({
-            'username': user.username,
-            'email': user.email,
-            'phone': user.phone,
-            'password': user.password
+            'username': query_user.username,
+            'email': query_user.email,
+            'phone': query_user.phone
         }, status=200)
 
     async def delete(self, request):
@@ -80,18 +89,21 @@ class UserView(HTTPMethodView):
         회원 탈퇴
         """
         data = request.json
-        is_empty = self.empty_validation(data)
 
-        if is_empty is False:
+        is_full = self.empty_validation(data)
+        if is_full is False:
             return json({'message': '정보를 모두 입력해주세요'}, status=400)
 
-        user = db_session.query(User).filter_by(username=data['username']).first()
+        query_user = self.none_validation(data['username'])
+        if query_user is None:
+            return json({'message': '존재하지 않는 유저입니다. 입력값을 확인해주세요'}, status=400)
 
-        if user.password == data['password']:
-            db_session.delete(user)
-            db_session.commit()
-            db_session.flush()
-            db_session.close()
-            return json(None, status=204)
+        if query_user.password != data['password']:
+            return json({'message': '비밀번호가 맞지 않습니다'}, status=400)
 
-        return json({'message': '유저 정보가 맞지 않습니다.'}, status=400)
+        db_session.delete(query_user)
+        db_session.commit()
+        db_session.flush()
+        db_session.close()
+
+        return json(None, status=204)
