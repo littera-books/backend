@@ -34,6 +34,15 @@ class UserView(HTTPMethodView):
         """
         return db_session.query(User).filter_by(username=username).first()
 
+    @staticmethod
+    def phone_validation(phone):
+        """
+        핸드폰 길이 제한 11자 validation 수행
+        :param phone: 입력값 phone_number
+        :return: 통과 True, 불가 False
+        """
+        return True if len(phone) <= 11 else False
+
     async def post(self, request):
         """
         회원 가입
@@ -43,6 +52,10 @@ class UserView(HTTPMethodView):
         is_full = self.empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+        phone_length = self.phone_validation(data['phone'])
+        if phone_length is False:
+            return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
         user = User(**data)
         db_session.add(user)
@@ -67,6 +80,10 @@ class UserView(HTTPMethodView):
         is_full = self.empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+        phone_length = self.phone_validation(data['phone'])
+        if phone_length is False:
+            return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
         query_user = self.none_validation(data['username'])
         if query_user is None:

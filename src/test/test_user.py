@@ -18,18 +18,29 @@ class TestUser(unittest.TestCase):
             'phone': '01098765432',
             'password': '1234'
         }
-        self.wrong_data = {
-            'username': 'dummy',
-            'email': 'dummy@test.com',
-            'phone': '01012345678',
-            'password': '4321'
-        }
         self.empty_data = {
             'username': '',
             'email': '',
             'phone': '',
             'password': ''
         }
+        self.invalid_password = {
+            'username': 'dummy',
+            'email': 'dummy@test.com',
+            'phone': '01012345678',
+            'password': '4321'
+        }
+        self.invalid_phone = {
+            'username': 'dummy',
+            'email': 'dummy@test.com',
+            'phone': '010123456789',
+            'password': '4321'
+        }
+        self.none_user = {
+            'username': 'coffee',
+            'email': 'dummy@test.com',
+            'phone': '01012345678',
+            'password': '1234'}
 
     def tearDown(self):
         """
@@ -58,6 +69,15 @@ class TestUser(unittest.TestCase):
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['empty_value'])
 
+    def test_user_create_failed_invalid_phone(self):
+        """
+        url에서 유저 생성 테스트 실패: 휴대폰 번호 길이 초과
+        """
+        request, response = APP.test_client.post(
+            '/user', data=json.dumps(self.invalid_phone))
+        self.assertEqual(response.status, 400)
+        self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['invalid_phone'])
+
     #     유저 수정 테스트     #
 
     def test_user_patch_succeed(self):
@@ -83,6 +103,15 @@ class TestUser(unittest.TestCase):
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['empty_value'])
 
+    def test_user_patch_failed_invalid_phone(self):
+        """
+        url에서 유저 정보 수정 테스트 실패: 휴대폰 번호 길이 초과
+        """
+        request, response = APP.test_client.patch(
+            '/user', data=json.dumps(self.invalid_phone))
+        self.assertEqual(response.status, 400)
+        self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['invalid_phone'])
+
     def test_user_patch_failed_none_user(self):
         """
         url에서 유저 정보 수정 테스트 실패: 유저 없음
@@ -92,7 +121,7 @@ class TestUser(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.patch(
-            '/user', data=json.dumps({'username': 'coffee'}))
+            '/user', data=json.dumps(self.none_user))
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['none_user'])
 
@@ -137,6 +166,6 @@ class TestUser(unittest.TestCase):
         request, response = APP.test_client.post(
             '/user', data=json.dumps(self.data))
         request, response = APP.test_client.delete(
-            '/user', data=json.dumps(self.wrong_data))
+            '/user', data=json.dumps(self.invalid_password))
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['invalid_password'])
         self.assertEqual(response.status, 400)
