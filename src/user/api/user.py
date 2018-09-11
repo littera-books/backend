@@ -10,7 +10,7 @@ class UserView(HTTPMethodView):
     """
     유저 관련 메서드 집합
     1. POST: 회원 가입
-    2. PATCH: 정보 수정
+    2. PUT: 정보 수정
     3. DELETE: 회원 탈퇴
     """
 
@@ -71,7 +71,7 @@ class UserView(HTTPMethodView):
             'phone': query_user.phone
         }, status=201)
 
-    async def patch(self, request):
+    async def put(self, request):
         """
         회원 정보 수정
         """
@@ -91,7 +91,6 @@ class UserView(HTTPMethodView):
 
         query_user.email = data['email']
         query_user.phone = data['phone']
-        query_user.password = data['password']
 
         db_session.commit()
         db_session.flush()

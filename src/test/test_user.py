@@ -80,7 +80,7 @@ class TestUser(unittest.TestCase):
 
     #     유저 수정 테스트     #
 
-    def test_user_patch_succeed(self):
+    def test_user_put_succeed(self):
         """
         url에서 유저 정보 수정 테스트 성공
         """
@@ -88,31 +88,31 @@ class TestUser(unittest.TestCase):
             '/user', data=json.dumps(self.data))
         self.assertEqual(response.status, 201)
 
-        request, response = APP.test_client.patch(
+        request, response = APP.test_client.put(
             '/user', data=json.dumps(self.patch_data))
         self.assertEqual(response.status, 200)
         self.assertEqual(response.json.get('email'), self.patch_data['email'])
         self.assertEqual(response.json.get('phone'), self.patch_data['phone'])
 
-    def test_user_patch_failed_input_empty(self):
+    def test_user_put_failed_input_empty(self):
         """
         url에서 유저 정보 수정 테스트 실패: 입력값 없음
         """
-        request, response = APP.test_client.patch(
+        request, response = APP.test_client.put(
             '/user', data=json.dumps(self.empty_data))
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['empty_value'])
 
-    def test_user_patch_failed_invalid_phone(self):
+    def test_user_put_failed_invalid_phone(self):
         """
         url에서 유저 정보 수정 테스트 실패: 휴대폰 번호 길이 초과
         """
-        request, response = APP.test_client.patch(
+        request, response = APP.test_client.put(
             '/user', data=json.dumps(self.invalid_phone))
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['invalid_phone'])
 
-    def test_user_patch_failed_none_user(self):
+    def test_user_put_failed_none_user(self):
         """
         url에서 유저 정보 수정 테스트 실패: 유저 없음
         """
@@ -120,7 +120,7 @@ class TestUser(unittest.TestCase):
             '/user', data=json.dumps(self.data))
         self.assertEqual(response.status, 201)
 
-        request, response = APP.test_client.patch(
+        request, response = APP.test_client.put(
             '/user', data=json.dumps(self.none_user))
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['none_user'])
