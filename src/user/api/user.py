@@ -2,7 +2,7 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
-from user import EXCEPTION_MESSAGE
+from user import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 from user.model import User
 
 
@@ -11,7 +11,8 @@ class UserView(HTTPMethodView):
     유저 관련 메서드 집합
     1. POST: 회원 가입
     2. PUT: 정보 수정
-    3. DELETE: 회원 탈퇴
+    3. PATCH: 비밀번호 수정
+    4. DELETE: 회원 탈퇴
     """
 
     @staticmethod
@@ -100,6 +101,27 @@ class UserView(HTTPMethodView):
             'email': query_user.email,
             'phone': query_user.phone
         }, status=200)
+
+    async def patch(self, request):
+        """
+        비밀번호 수정
+        """
+        data = request.json
+
+        is_full = self.empty_validation(data)
+        if is_full is False:
+            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+        query_user = self.none_validation(data['username'])
+        if query_user is None:
+            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+        query_user.password = data['password']
+
+        db_session.commit()
+        db_session.flush()
+
+        return json({'message': SUCCEED_MESSAGE['patch_password']}, status=200)
 
     async def delete(self, request):
         """
