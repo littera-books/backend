@@ -1,5 +1,6 @@
 from sanic import Sanic
 from sanic.response import text
+from sanic_cors import CORS
 from sanic_jwt import initialize
 
 from common.database import Base, engine
@@ -7,6 +8,8 @@ from user.api.user import UserView
 from user.api.auth import authenticate, payload_extender
 
 APP = Sanic(__name__)
+CORS(APP, resources={r'/*': {'origins': 'http://localhost:3000'}})
+
 APP.add_route(UserView.as_view(), '/user')
 initialize(APP, authenticate=authenticate, extend_payload=payload_extender)
 
