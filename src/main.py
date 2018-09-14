@@ -4,14 +4,13 @@ from sanic_cors import CORS
 from sanic_jwt import initialize
 
 from common.database import Base, engine
-from user.api.user import UserView
-from user.api.auth import authenticate, payload_extender
+from applications.user.api import auth, user
 
 APP = Sanic(__name__)
 CORS(APP, resources={r'/*': {'origins': 'http://localhost:3000'}})
 
-APP.add_route(UserView.as_view(), '/user')
-initialize(APP, authenticate=authenticate, extend_payload=payload_extender)
+APP.add_route(user.UserView.as_view(), '/user')
+initialize(APP, authenticate=auth.authenticate, extend_payload=auth.payload_extender)
 
 
 @APP.listener('before_server_start')

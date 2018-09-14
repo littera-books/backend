@@ -2,7 +2,7 @@ import json
 import unittest
 
 from main import APP
-from user import EXCEPTION_MESSAGE
+from applications.user import EXCEPTION_MESSAGE
 
 
 class TestAuth(unittest.TestCase):

@@ -2,8 +2,8 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
-from user import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
-from user.model import User
+from applications.user import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
+from applications.user.model import User
 
 
 class UserView(HTTPMethodView):

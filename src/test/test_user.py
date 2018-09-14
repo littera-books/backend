@@ -2,7 +2,7 @@ import json
 import unittest
 
 from main import APP
-from user import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
+from applications.user import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 
 
 class TestUser(unittest.TestCase):

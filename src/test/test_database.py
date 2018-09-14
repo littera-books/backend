@@ -3,8 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from common.database import Base
-from user.model import User
-from admin.model import Admin
+from applications.user.model import User
+from applications.admin.model import Admin
 
 
 class TestDB(unittest.TestCase):
