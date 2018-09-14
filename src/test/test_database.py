@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from common.database import Base
 from user.model import User
+from admin.model import Admin
 
 
 class TestDB(unittest.TestCase):
@@ -21,6 +22,13 @@ class TestDB(unittest.TestCase):
             'email': 'dfg@dfg.com',
             'phone': '01098765432',
             'password': 'chubby'
+        }
+        self.admin_data = {
+            'username': 'admin',
+            'password': 'superuser'
+        }
+        self.admin_patch_data = {
+            'password': 'supersuperuser'
         }
         Base.metadata.create_all(bind=self.engine)
 
@@ -67,3 +75,30 @@ class TestDB(unittest.TestCase):
         is_exists = self.session.query(User).filter_by(
             username=self.data['username']).count()
         self.assertEqual(is_exists, 0)
+
+    #     관리자 테스트     #
+
+    def test_admin_create(self):
+        """
+        DB에서 관리자 생성 테스트
+        """
+        admin_user = Admin(**self.admin_data)
+        self.session.add(admin_user)
+
+        query_user = self.session.query(Admin).filter_by(
+            username=self.admin_data['username']).first()
+        self.assertEqual(admin_user, query_user)
+
+    def test_admin_patch(self):
+        """
+        DB에서 관리자 비밀번호 수정 테스트
+        """
+        admin_user = Admin(**self.admin_data)
+        self.session.add(admin_user)
+
+        query_user = self.session.query(Admin).filter_by(
+            username=self.admin_data['username']).first()
+
+        query_user.password = self.admin_patch_data['password']
+
+        self.assertNotEqual(query_user.password, self.admin_data['password'])
