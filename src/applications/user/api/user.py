@@ -1,6 +1,7 @@
 from sanic.views import HTTPMethodView
 from sanic.response import json
 
+from common.validation import Validation
 from common.database import db_session
 from applications.user import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 from applications.user.model import User
@@ -15,46 +16,17 @@ class UserView(HTTPMethodView):
     4. DELETE: 회원 탈퇴
     """
 
-    @staticmethod
-    def empty_validation(data):
-        """
-        세 가지 메서드에 대해 validation 수행
-        :param data: request.json 값
-        :return: 하나라도 blank('') 값이 들어오면 False, 아니면 True
-        """
-        data_set = tuple(data.values())
-
-        return False if '' in data_set else True
-
-    @staticmethod
-    def none_validation(username):
-        """
-        세 가지 메서드에 대해 validation 수행
-        :param username: 쿼리를 찾으려는 username
-        :return: 존재하면 User 객체, 없으면 None
-        """
-        return db_session.query(User).filter_by(username=username).first()
-
-    @staticmethod
-    def phone_validation(phone):
-        """
-        핸드폰 길이 제한 11자 validation 수행
-        :param phone: 입력값 phone_number
-        :return: 통과 True, 불가 False
-        """
-        return True if len(phone) <= 11 else False
-
     async def post(self, request):
         """
         회원 가입
         """
         data = request.json
 
-        is_full = self.empty_validation(data)
+        is_full = Validation.empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        phone_length = self.phone_validation(data['phone'])
+        phone_length = Validation.phone_validation(data['phone'])
         if phone_length is False:
             return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
@@ -64,7 +36,7 @@ class UserView(HTTPMethodView):
         db_session.flush()
         db_session.close()
 
-        query_user = self.none_validation(data['username'])
+        query_user = Validation.none_validation(data['username'])
 
         return json({
             'username': query_user.username,
@@ -78,15 +50,15 @@ class UserView(HTTPMethodView):
         """
         data = request.json
 
-        is_full = self.empty_validation(data)
+        is_full = Validation.empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        phone_length = self.phone_validation(data['phone'])
+        phone_length = Validation.phone_validation(data['phone'])
         if phone_length is False:
             return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
-        query_user = self.none_validation(data['username'])
+        query_user = Validation.none_validation(data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -108,11 +80,11 @@ class UserView(HTTPMethodView):
         """
         data = request.json
 
-        is_full = self.empty_validation(data)
+        is_full = Validation.empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = self.none_validation(data['username'])
+        query_user = Validation.none_validation(data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -129,11 +101,11 @@ class UserView(HTTPMethodView):
         """
         data = request.json
 
-        is_full = self.empty_validation(data)
+        is_full = Validation.empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = self.none_validation(data['username'])
+        query_user = Validation.none_validation(data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
