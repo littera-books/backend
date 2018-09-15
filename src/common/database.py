@@ -2,12 +2,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from common import read_secrets
+from .read_secrets import secret_json
 
-DB_NAME = read_secrets.secret_json['DB_NAME']
-DB_USER = read_secrets.secret_json['DB_USER']
-HOST = read_secrets.secret_json['HOST']
-PASSWORD = read_secrets.secret_json['PASSWORD']
+DB_NAME = secret_json['DB_NAME']
+DB_USER = secret_json['DB_USER']
+HOST = secret_json['HOST']
+PASSWORD = secret_json['PASSWORD']
 
 engine = create_engine(
     f'postgresql://{DB_USER}:{PASSWORD}@{HOST}/{DB_NAME}', echo=True)

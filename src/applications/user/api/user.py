@@ -3,8 +3,8 @@ from sanic.response import json
 
 from common.validation import Validation
 from common.database import db_session
-from applications.user import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
-from applications.user.model import User
+from .. import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
+from ..model import User
 
 
 class UserView(HTTPMethodView):

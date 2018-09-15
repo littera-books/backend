@@ -1,8 +1,8 @@
 from sanic_jwt import exceptions
 
 from common.database import db_session
-from applications.user import EXCEPTION_MESSAGE
-from applications.user.model import User
+from .. import EXCEPTION_MESSAGE
+from ..model import User
 
 
 async def authenticate(request, *args, **kwargs):
