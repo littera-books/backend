@@ -1,16 +1,30 @@
 from sanic import Sanic
 from sanic.response import text
 from sanic_cors import CORS
-from sanic_jwt import initialize
+from sanic_jwt import Initialize
 
 from common.database import Base, engine
-from applications.user.api import auth, user
+from applications.user.api import auth as user_auth, user
+from applications.admin.api import auth as admin_auth, admin
 
 APP = Sanic(__name__)
 CORS(APP, resources={r'/*': {'origins': 'http://localhost:3000'}})
 
-APP.add_route(user.UserView.as_view(), '/user')
-initialize(APP, authenticate=auth.authenticate, extend_payload=auth.payload_extender)
+Initialize(instance=user.blueprint,
+           app=APP,
+           authenticate=user_auth.authenticate,
+           extend_payload=user_auth.payload_extender,
+           access_token_name='user_token',
+           url_prefix='/auth/user')
+Initialize(instance=admin.blueprint,
+           app=APP,
+           authenticate=admin_auth.authenticate,
+           extend_payload=admin_auth.payload_extender,
+           access_token_name='admin_token',
+           url_prefix='/auth/admin')
+
+APP.blueprint(user.blueprint)
+APP.blueprint(admin.blueprint)
 
 
 @APP.listener('before_server_start')
