@@ -29,7 +29,7 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.post(
-            '/auth', data=json.dumps(self.data))
+            '/auth/user', data=json.dumps(self.data))
         self.assertEqual(response.status, 200)
 
     def test_user_login_failed_input_empty(self):
@@ -41,7 +41,7 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.post(
-            '/auth', data=json.dumps({
+            '/auth/user', data=json.dumps({
                 'username': '',
                 'password': ''
             }))
@@ -57,7 +57,7 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.post(
-            '/auth', data=json.dumps({
+            '/auth/user', data=json.dumps({
                 'username': 'littera',
                 'password': '1234'
             }))
@@ -73,7 +73,7 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.post(
-            '/auth', data=json.dumps({
+            '/auth/user', data=json.dumps({
                 'username': 'authy',
                 'password': '4321'
             }))
