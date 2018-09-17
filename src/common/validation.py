@@ -1,7 +1,3 @@
-from applications.user.model import User
-from .database import db_session
-
-
 class Validation:
     @staticmethod
     def empty_validation(data):
@@ -15,13 +11,15 @@ class Validation:
         return False if '' in data_set else True
 
     @staticmethod
-    def none_validation(username):
+    def none_validation(session, model, username):
         """
         세 가지 메서드에 대해 validation 수행
+        :param session: session 객체
+        :param model: model 객체
         :param username: 쿼리를 찾으려는 username
         :return: 존재하면 User 객체, 없으면 None
         """
-        return db_session.query(User).filter_by(username=username).first()
+        return session.query(model).filter_by(username=username).first()
 
     @staticmethod
     def phone_validation(phone):
