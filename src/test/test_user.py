@@ -206,7 +206,7 @@ class TestUser(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.delete(
-            '/user', data=json.dumps({'username': 'coffee'}))
+            '/user', data=json.dumps(self.none_user))
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['none_user'])
 
