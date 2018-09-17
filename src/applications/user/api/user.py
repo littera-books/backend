@@ -1,8 +1,8 @@
 from sanic.views import HTTPMethodView
 from sanic.response import json
 
-from common.validation import Validation
 from common.database import db_session
+from common.validation import Validation
 from .. import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 from ..model import User
 
