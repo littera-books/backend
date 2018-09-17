@@ -13,3 +13,13 @@ class Admin(Base):
 
     def __repr__(self):
         return f'<Admin(username={self.username}>'
+
+    def to_dict(self):
+        """
+        sanic-jwt 에 user 정보를 dict 형태로 전달하는 메서드
+        """
+        return {
+            'user_id': self.id,
+            'username': self.username,
+            'is_admin': self.is_admin,
+        }
