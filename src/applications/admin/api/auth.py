@@ -16,7 +16,7 @@ async def authenticate(request, *args, **kwargs):
     if is_full is False:
         raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['empty_value'])
 
-    query_user = Validation.none_validation(db_session, Admin, username=data['username'])
+    query_user = Validation.query_validation(db_session, Admin, username=data['username'])
     if query_user is None:
         raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['none_user'])
 

@@ -11,7 +11,7 @@ class Validation:
         return False if '' in data_set else True
 
     @staticmethod
-    def none_validation(session, model, **kwargs):
+    def query_validation(session, model, **kwargs):
         """
         세 가지 메서드에 대해 validation 수행
         :param session: session 객체

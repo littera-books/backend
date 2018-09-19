@@ -32,7 +32,7 @@ class SurveyQuestionView(HTTPMethodView):
         db_session.flush()
         db_session.close()
 
-        query_question = Validation.none_validation(db_session, Question, title=data['title'])
+        query_question = Validation.query_validation(db_session, Question, title=data['title'])
 
         return json({
             'title': query_question.title
