@@ -1,7 +1,9 @@
 from sqlalchemy import Column, String, Integer, Boolean
+from sqlalchemy.orm import relationship
 from sqlalchemy_utils import PasswordType
 
 from common.database import Base
+from applications.message.model import Message
 
 
 class Admin(Base):
@@ -10,6 +12,7 @@ class Admin(Base):
     username = Column(String(length=32), unique=True, nullable=False)
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)
     is_admin = Column(Boolean, default=True)
+    user = relationship(Message, back_populates='admin')
 
     def __repr__(self):
         return f'<Admin(username={self.username}>'
