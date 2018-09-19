@@ -11,15 +11,15 @@ class Validation:
         return False if '' in data_set else True
 
     @staticmethod
-    def none_validation(session, model, username):
+    def none_validation(session, model, **kwargs):
         """
         세 가지 메서드에 대해 validation 수행
         :param session: session 객체
         :param model: model 객체
-        :param username: 쿼리를 찾으려는 username
+        :param kwargs: 쿼리를 찾으려는 kwargs
         :return: 존재하면 User 객체, 없으면 None
         """
-        return session.query(model).filter_by(username=username).first()
+        return session.query(model).filter_by(**kwargs).first()
 
     @staticmethod
     def phone_validation(phone):

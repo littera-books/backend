@@ -34,7 +34,7 @@ class AdminView(HTTPMethodView):
         db_session.flush()
         db_session.close()
 
-        query_user = Validation.none_validation(db_session, Admin, data['username'])
+        query_user = Validation.none_validation(db_session, Admin, username=data['username'])
 
         return json({
             'username': query_user.username,
@@ -51,7 +51,7 @@ class AdminView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = Validation.none_validation(db_session, Admin, data['username'])
+        query_user = Validation.none_validation(db_session, Admin, username=data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -72,7 +72,7 @@ class AdminView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = Validation.none_validation(db_session, Admin, data['username'])
+        query_user = Validation.none_validation(db_session, Admin, username=data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 

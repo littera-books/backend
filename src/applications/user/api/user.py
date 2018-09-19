@@ -39,7 +39,7 @@ class UserView(HTTPMethodView):
         db_session.flush()
         db_session.close()
 
-        query_user = Validation.none_validation(db_session, User, data['username'])
+        query_user = Validation.none_validation(db_session, User, username=data['username'])
 
         return json({
             'username': query_user.username,
@@ -61,7 +61,7 @@ class UserView(HTTPMethodView):
         if phone_length is False:
             return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
-        query_user = Validation.none_validation(db_session, User, data['username'])
+        query_user = Validation.none_validation(db_session, User, username=data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -87,7 +87,7 @@ class UserView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = Validation.none_validation(db_session, User, data['username'])
+        query_user = Validation.none_validation(db_session, User, username=data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -108,7 +108,7 @@ class UserView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = Validation.none_validation(db_session, User, data['username'])
+        query_user = Validation.none_validation(db_session, User, username=data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
