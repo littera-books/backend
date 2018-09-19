@@ -7,7 +7,7 @@ from applications.user.model import User
 from applications.admin.model import Admin
 
 
-class TestDB(unittest.TestCase):
+class TestDBUserAdmin(unittest.TestCase):
     def setUp(self):
         self.engine = create_engine('sqlite:///:memory:', echo=True)
         self.sessionmaker = sessionmaker(bind=self.engine)
@@ -17,7 +17,8 @@ class TestDB(unittest.TestCase):
             'username': 'qwerty',
             'email': 'abc@abc.com',
             'phone': '01012345678',
-            'password': 'dummy'}
+            'password': 'dummy'
+        }
         self.patch_data = {
             'email': 'dfg@dfg.com',
             'phone': '01098765432',
@@ -114,6 +115,6 @@ class TestDB(unittest.TestCase):
             username=self.admin_data['username']).first()
         self.session.delete(query_user)
 
-        is_exists = self.session.query(User).filter_by(
+        is_exists = self.session.query(Admin).filter_by(
             username=self.admin_data['username']).count()
         self.assertEqual(is_exists, 0)

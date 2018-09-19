@@ -35,6 +35,7 @@ class SurveyQuestionView(HTTPMethodView):
         query_question = Validation.query_validation(db_session, Question, title=data['title'])
 
         return json({
+            'subject': query_question.subject,
             'title': query_question.title
         }, status=201)
 
