@@ -6,6 +6,7 @@ from sanic_jwt import Initialize
 from common.database import Base, engine
 from applications.user.api import auth as user_auth, user
 from applications.admin.api import auth as admin_auth, admin
+from applications.survey.api import question
 from applications.message import api as message_api
 
 APP = Sanic(__name__)
@@ -26,6 +27,7 @@ Initialize(instance=admin.blueprint,
 
 APP.blueprint(user.blueprint)
 APP.blueprint(admin.blueprint)
+APP.blueprint(question.blueprint)
 APP.blueprint(message_api.blueprint)
 
 
