@@ -2,7 +2,7 @@ from sanic_jwt import exceptions
 
 from common.database import db_session
 from common.validation import Validation
-from .. import EXCEPTION_MESSAGE
+from common.messages import EXCEPTION_MESSAGE
 from ..model import User
 
 

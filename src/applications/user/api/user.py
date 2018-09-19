@@ -4,7 +4,7 @@ from sanic.response import json
 
 from common.database import db_session
 from common.validation import Validation
-from .. import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
+from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 from ..model import User
 
 blueprint = Blueprint('User')
