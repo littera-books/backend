@@ -9,7 +9,7 @@ class Question(Base):
     id = Column(Integer, primary_key=True)
     subject = Column(String(length=10), unique=True, nullable=False)
     title = Column(String(length=255), unique=False, nullable=False)
-    selection = relationship('Selection', back_populates='questions')
+    selection = relationship('Selection', back_populates='question')
 
     def __repr__(self):
         return f'<Question title={self.subject}>'
@@ -20,4 +20,4 @@ class Selection(Base):
     id = Column(Integer, primary_key=True)
     select = Column(String(length=255), unique=False, nullable=False)
     question_id = Column(Integer, ForeignKey('question.id'))
-    question = relationship('Question', back_populates='selections')
+    question = relationship('Question', back_populates='selection')
