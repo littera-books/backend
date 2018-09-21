@@ -67,3 +67,18 @@ class TestUserValues:
         'phone': '01012345678',
         'password': '1234'
     }
+
+
+class TestQuestionValues:
+    default = {
+        'subject': 'dummy',
+        'title': '테스트 질문'
+    }
+    empty = {
+        'subject': '',
+        'title': ''
+    }
+    none = {
+        'subject': 'coffee',
+        'title': '테스트 질문'
+    }

@@ -33,7 +33,7 @@ class SurveyQuestionView(HTTPMethodView):
         db_session.flush()
         db_session.close()
 
-        query_question = Validation.query_validation(db_session, Question, title=data['title'])
+        query_question = Validation.query_validation(db_session, Question, subject=data['subject'])
 
         return json({
             'subject': query_question.subject,
@@ -50,7 +50,7 @@ class SurveyQuestionView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_question = Validation.query_validation(db_session, Question, title=data['title'])
+        query_question = Validation.query_validation(db_session, Question, subject=data['subject'])
         if query_question is None:
             return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
