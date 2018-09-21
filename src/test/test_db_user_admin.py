@@ -3,8 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from common.database import Base
+from common.validation import Validation
 from applications.user.model import User
 from applications.admin.model import Admin
+from .test_values import TestAdminValues, TestUserValues
 
 
 class TestDBUserAdmin(unittest.TestCase):
@@ -13,68 +15,47 @@ class TestDBUserAdmin(unittest.TestCase):
         self.sessionmaker = sessionmaker(bind=self.engine)
         self.session = self.sessionmaker()
         self.base = Base
-        self.data = {
-            'username': 'qwerty',
-            'email': 'abc@abc.com',
-            'phone': '01012345678',
-            'password': 'dummy'
-        }
-        self.patch_data = {
-            'email': 'dfg@dfg.com',
-            'phone': '01098765432',
-            'password': 'chubby'
-        }
-        self.admin_data = {
-            'username': 'admin',
-            'password': 'superuser'
-        }
-        self.admin_patch_data = {
-            'password': 'supersuperuser'
-        }
         Base.metadata.create_all(bind=self.engine)
 
     def test_user_create(self):
         """
         DB에서 유저 생성 테스트
         """
-        dummy_user = User(**self.data)
+        dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = self.session.query(User).filter_by(
-            username=self.data['username']).first()
+        query_user = Validation.query_validation(self.session, User, username=TestUserValues.default['username'])
         self.assertEqual(dummy_user, query_user)
 
     def test_user_patch(self):
         """
         DB에서 유저 정보 수정 테스트
         """
-        dummy_user = User(**self.data)
+        dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = self.session.query(User).filter_by(
-            username=self.data['username']).first()
+        query_user = Validation.query_validation(self.session, User, username=TestUserValues.default['username'])
 
-        query_user.email = self.patch_data['email']
-        query_user.phone = self.patch_data['phone']
-        query_user.password = self.patch_data['password']
+        query_user.email = TestUserValues.put['email']
+        query_user.phone = TestUserValues.put['phone']
+        query_user.password = TestUserValues.patch['password']
 
-        self.assertNotEqual(query_user.email, self.data['email'])
-        self.assertNotEqual(query_user.phone, self.data['phone'])
-        self.assertNotEqual(query_user.password, self.data['password'])
+        self.assertNotEqual(query_user.email, TestUserValues.default['email'])
+        self.assertNotEqual(query_user.phone, TestUserValues.default['phone'])
+        self.assertNotEqual(query_user.password, TestUserValues.default['password'])
 
     def test_user_delete(self):
         """
         DB에서 유저 삭제 테스트
         """
-        dummy_user = User(**self.data)
+        dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = self.session.query(User).filter_by(
-            username=self.data['username']).first()
+        query_user = Validation.query_validation(self.session, User, username=TestUserValues.default['username'])
         self.session.delete(query_user)
 
         is_exists = self.session.query(User).filter_by(
-            username=self.data['username']).count()
+            username=TestUserValues.default['username']).count()
         self.assertEqual(is_exists, 0)
 
     #     관리자 테스트     #
@@ -83,38 +64,34 @@ class TestDBUserAdmin(unittest.TestCase):
         """
         DB에서 관리자 생성 테스트
         """
-        admin_user = Admin(**self.admin_data)
-        self.session.add(admin_user)
+        dummy_admin = Admin(**TestAdminValues.default)
+        self.session.add(dummy_admin)
 
-        query_user = self.session.query(Admin).filter_by(
-            username=self.admin_data['username']).first()
-        self.assertEqual(admin_user, query_user)
+        query_admin = Validation.query_validation(self.session, Admin, username=TestAdminValues.default['username'])
+        self.assertEqual(dummy_admin, query_admin)
 
     def test_admin_patch(self):
         """
         DB에서 관리자 비밀번호 수정 테스트
         """
-        admin_user = Admin(**self.admin_data)
-        self.session.add(admin_user)
+        dummy_admin = Admin(**TestAdminValues.default)
+        self.session.add(dummy_admin)
 
-        query_user = self.session.query(Admin).filter_by(
-            username=self.admin_data['username']).first()
+        query_admin = Validation.query_validation(self.session, Admin, username=TestAdminValues.default['username'])
 
-        query_user.password = self.admin_patch_data['password']
-
-        self.assertNotEqual(query_user.password, self.admin_data['password'])
+        query_admin.password = TestAdminValues.patch['password']
+        self.assertNotEqual(query_admin.password, TestAdminValues.default['password'])
 
     def test_admin_delete(self):
         """
         DB에서 관리자 삭제 테스트
         """
-        admin_user = Admin(**self.admin_data)
-        self.session.add(admin_user)
+        dummy_admin = Admin(**TestAdminValues.default)
+        self.session.add(dummy_admin)
 
-        query_user = self.session.query(Admin).filter_by(
-            username=self.admin_data['username']).first()
-        self.session.delete(query_user)
+        query_admin = Validation.query_validation(self.session, Admin, username=TestAdminValues.default['username'])
+        self.session.delete(query_admin)
 
         is_exists = self.session.query(Admin).filter_by(
-            username=self.admin_data['username']).count()
+            username=TestAdminValues.default['username']).count()
         self.assertEqual(is_exists, 0)
