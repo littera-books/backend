@@ -18,6 +18,20 @@ class TestQuestionAPI(unittest.TestCase):
         APP.test_client.delete(
             f'/survey/question/{TestQuestionValues.default["subject"]}')
 
+    #     질문 호출 테스트     #
+    def test_question_get_list(self):
+        """
+        url에서 질문 호출 테스트 성공
+        """
+        request, response = APP.test_client.post(
+            '/survey/question', data=json.dumps(TestQuestionValues.default)
+        )
+        self.assertEqual(response.status, 201)
+
+        request, response = APP.test_client.get('/survey/question')
+        self.assertEqual(response.status, 200)
+        self.assertEqual(response.json.get('length'), len(response.json.get('items')))
+
     #     질문 생성 테스트     #
 
     def test_question_create_succeed(self):

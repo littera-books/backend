@@ -12,6 +12,27 @@ blueprint = Blueprint('SurveyQuestion')
 
 class QuestionCreateListView(HTTPMethodView):
 
+    async def get(self, request):
+        """
+        질문 리스트 반환
+        """
+        query_question = db_session.query(Question).all()
+
+        result = {
+            'length': len(query_question),
+            'items': []
+        }
+
+        for question in query_question:
+            item = {
+                'id': question.id,
+                'subject': question.subject,
+                'title': question.title
+            }
+            result['items'].append(item)
+
+        return json(result, status=200)
+
     async def post(self, request):
         """
         질문 생성
