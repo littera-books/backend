@@ -10,12 +10,7 @@ from ..model import Question
 blueprint = Blueprint('SurveyQuestion')
 
 
-class SurveyQuestionView(HTTPMethodView):
-    """
-    설문조사: 질문 메서드 집합
-    1. POST: 질문 생성
-    2. DELETE: 질문 삭제
-    """
+class QuestionCreateListView(HTTPMethodView):
 
     async def post(self, request):
         """
@@ -40,17 +35,15 @@ class SurveyQuestionView(HTTPMethodView):
             'title': query_question.title
         }, status=201)
 
-    async def delete(self, request):
+
+class QuestionRetrieveUpdateDeleteView(HTTPMethodView):
+
+    async def delete(self, request, subject):
         """
         질문 삭제
         """
-        data = request.json
 
-        is_full = Validation.empty_validation(data)
-        if is_full is False:
-            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
-
-        query_question = Validation.query_validation(db_session, Question, subject=data['subject'])
+        query_question = Validation.query_validation(db_session, Question, subject=subject)
         if query_question is None:
             return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
@@ -62,4 +55,5 @@ class SurveyQuestionView(HTTPMethodView):
         return json(None, status=204)
 
 
-blueprint.add_route(SurveyQuestionView.as_view(), '/survey/question', strict_slashes=True)
+blueprint.add_route(QuestionCreateListView.as_view(), '/survey/question', strict_slashes=True)
+blueprint.add_route(QuestionRetrieveUpdateDeleteView.as_view(), '/survey/question/<subject>', strict_slashes=True)

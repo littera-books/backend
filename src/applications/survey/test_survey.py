@@ -16,8 +16,7 @@ class TestQuestionAPI(unittest.TestCase):
         더미 질문 삭제
         """
         APP.test_client.delete(
-            '/survey/question', data=json.dumps(TestQuestionValues.default)
-        )
+            f'/survey/question/{TestQuestionValues.default["subject"]}')
 
     #     질문 생성 테스트     #
 
@@ -53,8 +52,7 @@ class TestQuestionAPI(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.delete(
-            '/survey/question', data=json.dumps(TestQuestionValues.default)
-        )
+            f'/survey/question/{TestQuestionValues.default["subject"]}')
         self.assertEqual(response.status, 204)
 
     def test_question_delete_failed_input_empty(self):
@@ -67,10 +65,9 @@ class TestQuestionAPI(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.delete(
-            '/survey/question', data=json.dumps(TestQuestionValues.empty)
-        )
-        self.assertEqual(response.status, 400)
-        self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['empty_value'])
+            f'/survey/question/{TestQuestionValues.empty["subject"]}')
+        self.assertEqual(response.status, 404)
+        self.assertEqual(response.reason, 'Not Found')
 
     def test_question_delete_failed_none_question(self):
         """
@@ -82,7 +79,6 @@ class TestQuestionAPI(unittest.TestCase):
         self.assertEqual(response.status, 201)
 
         request, response = APP.test_client.delete(
-            '/survey/question', data=json.dumps(TestQuestionValues.none)
-        )
+            f'/survey/question/{TestQuestionValues.none["subject"]}')
         self.assertEqual(response.status, 400)
         self.assertEqual(response.json.get('message'), EXCEPTION_MESSAGE['none_question'])
