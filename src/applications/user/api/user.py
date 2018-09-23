@@ -10,13 +10,10 @@ from ..model import User
 blueprint = Blueprint('User')
 
 
-class UserView(HTTPMethodView):
+class UserCreateView(HTTPMethodView):
     """
     유저 관련 메서드 집합
     1. POST: 회원 가입
-    2. PUT: 정보 수정
-    3. PATCH: 비밀번호 수정
-    4. DELETE: 회원 탈퇴
     """
 
     async def post(self, request):
@@ -47,7 +44,16 @@ class UserView(HTTPMethodView):
             'phone': query_user.phone
         }, status=201)
 
-    async def put(self, request):
+
+class UserUpdateDestroyView(HTTPMethodView):
+    """
+    유저 관련 메서드 집합
+    1. PUT: 정보 수정
+    2. PATCH: 비밀번호 수정
+    3. DELETE: 회원 탈퇴
+    """
+
+    async def put(self, request, username):
         """
         회원 정보 수정
         """
@@ -61,7 +67,7 @@ class UserView(HTTPMethodView):
         if phone_length is False:
             return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
-        query_user = query_validation(db_session, User, username=data['username'])
+        query_user = query_validation(db_session, User, username=username)
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -77,7 +83,7 @@ class UserView(HTTPMethodView):
             'phone': query_user.phone
         }, status=200)
 
-    async def patch(self, request):
+    async def patch(self, request, username):
         """
         비밀번호 수정
         """
@@ -87,7 +93,7 @@ class UserView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = query_validation(db_session, User, username=data['username'])
+        query_user = query_validation(db_session, User, username=username)
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -95,10 +101,11 @@ class UserView(HTTPMethodView):
 
         db_session.commit()
         db_session.flush()
+        db_session.close()
 
         return json({'message': SUCCEED_MESSAGE['patch_password']}, status=200)
 
-    async def delete(self, request):
+    async def delete(self, request, username):
         """
         회원 탈퇴
         """
@@ -108,7 +115,7 @@ class UserView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = query_validation(db_session, User, username=data['username'])
+        query_user = query_validation(db_session, User, username=username)
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -123,4 +130,5 @@ class UserView(HTTPMethodView):
         return json(None, status=204)
 
 
-blueprint.add_route(UserView.as_view(), '/user', strict_slashes=True)
+blueprint.add_route(UserCreateView.as_view(), '/user', strict_slashes=True)
+blueprint.add_route(UserUpdateDestroyView.as_view(), '/user/<username>', strict_slashes=True)
