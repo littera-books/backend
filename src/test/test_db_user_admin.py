@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from common.database import Base
-from common.validation import Validation
+from common.validation import query_validation
 from applications.user.model import User
 from applications.admin.model import Admin
 from .test_values import TestAdminValues, TestUserValues
@@ -24,7 +24,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = Validation.query_validation(self.session, User, username=TestUserValues.default['username'])
+        query_user = query_validation(self.session, User, username=TestUserValues.default['username'])
         self.assertEqual(dummy_user, query_user)
 
     def test_user_patch(self):
@@ -34,7 +34,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = Validation.query_validation(self.session, User, username=TestUserValues.default['username'])
+        query_user = query_validation(self.session, User, username=TestUserValues.default['username'])
 
         query_user.email = TestUserValues.put['email']
         query_user.phone = TestUserValues.put['phone']
@@ -51,7 +51,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = Validation.query_validation(self.session, User, username=TestUserValues.default['username'])
+        query_user = query_validation(self.session, User, username=TestUserValues.default['username'])
         self.session.delete(query_user)
 
         is_exists = self.session.query(User).filter_by(
@@ -67,7 +67,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_admin = Admin(**TestAdminValues.default)
         self.session.add(dummy_admin)
 
-        query_admin = Validation.query_validation(self.session, Admin, username=TestAdminValues.default['username'])
+        query_admin = query_validation(self.session, Admin, username=TestAdminValues.default['username'])
         self.assertEqual(dummy_admin, query_admin)
 
     def test_admin_patch(self):
@@ -77,7 +77,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_admin = Admin(**TestAdminValues.default)
         self.session.add(dummy_admin)
 
-        query_admin = Validation.query_validation(self.session, Admin, username=TestAdminValues.default['username'])
+        query_admin = query_validation(self.session, Admin, username=TestAdminValues.default['username'])
 
         query_admin.password = TestAdminValues.patch['password']
         self.assertNotEqual(query_admin.password, TestAdminValues.default['password'])
@@ -89,7 +89,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_admin = Admin(**TestAdminValues.default)
         self.session.add(dummy_admin)
 
-        query_admin = Validation.query_validation(self.session, Admin, username=TestAdminValues.default['username'])
+        query_admin = query_validation(self.session, Admin, username=TestAdminValues.default['username'])
         self.session.delete(query_admin)
 
         is_exists = self.session.query(Admin).filter_by(

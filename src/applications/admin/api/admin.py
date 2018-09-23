@@ -3,7 +3,7 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
-from common.validation import Validation
+from common.validation import empty_validation, query_validation
 from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 from ..model import Admin
 
@@ -24,7 +24,7 @@ class AdminView(HTTPMethodView):
         """
         data = request.json
 
-        is_full = Validation.empty_validation(data)
+        is_full = empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
@@ -34,7 +34,7 @@ class AdminView(HTTPMethodView):
         db_session.flush()
         db_session.close()
 
-        query_user = Validation.query_validation(db_session, Admin, username=data['username'])
+        query_user = query_validation(db_session, Admin, username=data['username'])
 
         return json({
             'username': query_user.username,
@@ -47,11 +47,11 @@ class AdminView(HTTPMethodView):
         """
         data = request.json
 
-        is_full = Validation.empty_validation(data)
+        is_full = empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = Validation.query_validation(db_session, Admin, username=data['username'])
+        query_user = query_validation(db_session, Admin, username=data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
@@ -68,11 +68,11 @@ class AdminView(HTTPMethodView):
         """
         data = request.json
 
-        is_full = Validation.empty_validation(data)
+        is_full = empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        query_user = Validation.query_validation(db_session, Admin, username=data['username'])
+        query_user = query_validation(db_session, Admin, username=data['username'])
         if query_user is None:
             return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 

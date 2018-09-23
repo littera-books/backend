@@ -1,7 +1,7 @@
 from sanic_jwt import exceptions
 
 from common.database import db_session
-from common.validation import Validation
+from common.validation import empty_validation, query_validation
 from common.messages import EXCEPTION_MESSAGE
 from ..model import User
 
@@ -12,11 +12,11 @@ async def authenticate(request, *args, **kwargs):
     """
     data = request.json
 
-    is_full = Validation.empty_validation(data)
+    is_full = empty_validation(data)
     if is_full is False:
         raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['empty_value'])
 
-    query_user = Validation.query_validation(db_session, User, username=data['username'])
+    query_user = query_validation(db_session, User, username=data['username'])
     if query_user is None:
         raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['none_user'])
 
