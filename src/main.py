@@ -4,8 +4,8 @@ from sanic_cors import CORS
 from sanic_jwt import Initialize
 
 from common.database import Base, engine
-from applications.user.api import auth as user_auth, user
-from applications.admin.api import auth as admin_auth, admin
+from applications.user.api import auth as auth_user, user
+from applications.admin.api import auth as auth_admin, admin
 from applications.survey.api import question
 from applications.message import api as message_api
 
@@ -14,14 +14,14 @@ CORS(APP, resources={r'/*': {'origins': 'http://localhost:3000'}})
 
 Initialize(instance=user.blueprint,
            app=APP,
-           authenticate=user_auth.authenticate,
-           extend_payload=user_auth.payload_extender,
+           authenticate=auth_user.authenticate,
+           extend_payload=auth_user.payload_extender,
            access_token_name='user_token',
            url_prefix='/auth/user')
 Initialize(instance=admin.blueprint,
            app=APP,
-           authenticate=admin_auth.authenticate,
-           extend_payload=admin_auth.payload_extender,
+           authenticate=auth_admin.authenticate,
+           extend_payload=auth_admin.payload_extender,
            access_token_name='admin_token',
            url_prefix='/auth/admin')
 
