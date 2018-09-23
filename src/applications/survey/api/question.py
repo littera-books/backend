@@ -16,7 +16,7 @@ class QuestionCreateListView(HTTPMethodView):
         """
         질문 리스트 반환
         """
-        query_question = db_session.query(Question).order_by(Question.id).all()
+        query_question = db_session.query(Question).order_by(Question.created_at).all()
 
         result = {
             'length': len(query_question),
