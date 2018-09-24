@@ -20,10 +20,11 @@ def query_validation(session, model, **kwargs):
     return session.query(model).filter_by(**kwargs).first()
 
 
-def phone_validation(phone):
+def length_validation(row, length):
     """
-    핸드폰 길이 제한 11자 validation 수행
-    :param phone: 입력값 phone_number
+    각 테이블 row 길이 제한 validation 수행
+    :param row: 입력하려는 row 값
+    :param length: row 값이 제한하는 길이
     :return: 통과 True, 불가 False
     """
-    return True if len(phone) <= 11 else False
+    return True if len(row) <= length else False

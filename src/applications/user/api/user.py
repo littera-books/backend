@@ -3,7 +3,7 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
-from common.validation import empty_validation, query_validation, phone_validation
+from common.validation import empty_validation, query_validation, length_validation
 from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 from ..model import User
 
@@ -26,7 +26,11 @@ class UserCreateView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        phone_length = phone_validation(data['phone'])
+        username_length = length_validation(data['username'], 50)
+        if username_length is False:
+            return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
+
+        phone_length = length_validation(data['phone'], 11)
         if phone_length is False:
             return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
@@ -63,7 +67,7 @@ class UserUpdateDestroyView(HTTPMethodView):
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        phone_length = phone_validation(data['phone'])
+        phone_length = length_validation(data['phone'], 11)
         if phone_length is False:
             return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 

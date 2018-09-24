@@ -3,7 +3,7 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
-from common.validation import empty_validation, query_validation
+from common.validation import empty_validation, query_validation, length_validation
 from common.messages import EXCEPTION_MESSAGE
 from ..model import Question
 
@@ -42,6 +42,10 @@ class QuestionCreateListView(HTTPMethodView):
         is_full = empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+        subject_length = length_validation(data['subject'], 50)
+        if subject_length is False:
+            return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
 
         question = Question(**data)
         db_session.add(question)

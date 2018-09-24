@@ -7,5 +7,7 @@ EXCEPTION_MESSAGE = {
     'none_question': '존재하지 않는 질문입니다. 입력값을 확인해주세요',
     'none_user': '존재하지 않는 유저입니다. 입력값을 확인해주세요',
     'invalid_phone': '휴대폰 번호 길이가 너무 깁니다. 입력값을 확인해주세요',
+    'invalid_username': '아이디 길이가 너무 깁니다. 입력값을 확인해주세요',
+    'invalid_subject': '질문 주제가 너무 깁니다. 입력값을 확인해주세요',
     'invalid_password': '비밀번호가 맞지 않습니다'
 }

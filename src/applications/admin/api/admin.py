@@ -3,7 +3,7 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
-from common.validation import empty_validation, query_validation
+from common.validation import empty_validation, query_validation, length_validation
 from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
 from ..model import Admin
 
@@ -27,6 +27,10 @@ class AdminView(HTTPMethodView):
         is_full = empty_validation(data)
         if is_full is False:
             return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+        username_length = length_validation(data['username'], 50)
+        if username_length is False:
+            return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
 
         user = Admin(**data)
         db_session.add(user)
