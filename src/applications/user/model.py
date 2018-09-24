@@ -10,7 +10,7 @@ from applications.message.model import Message
 class User(Base):
     __tablename__ = 'littera_user'
     id = Column(Integer, primary_key=True)
-    username = Column(String(length=32), unique=True, nullable=False)
+    username = Column(String(length=50), unique=True, nullable=False)
     email = Column(EmailType, unique=True, nullable=False)
     phone = Column(String(length=11), unique=True, nullable=False)
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)

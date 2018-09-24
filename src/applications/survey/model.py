@@ -8,7 +8,7 @@ from common.database import Base
 class Question(Base):
     __tablename__ = 'question'
     id = Column(Integer, primary_key=True)
-    subject = Column(String(length=20), unique=True, nullable=False)
+    subject = Column(String(length=50), unique=True, nullable=False)
     title = Column(String(length=255), unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     selection = relationship('Selection', back_populates='question')
