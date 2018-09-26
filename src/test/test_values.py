@@ -86,3 +86,9 @@ class TestQuestionValues:
         'subject': 'coffee',
         'title': '테스트 질문'
     }
+
+
+class TestSelectionValues:
+    default = {
+        'select': '테스트 선택지'
+    }
