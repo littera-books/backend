@@ -11,7 +11,7 @@ class Question(Base):
     subject = Column(String(length=50), unique=True, nullable=False)
     title = Column(String(length=255), unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    selection = relationship('Selection', back_populates='question')
+    selection = relationship('Selection', back_populates='question', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Question subject={self.subject}>'
