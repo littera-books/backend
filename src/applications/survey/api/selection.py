@@ -61,6 +61,21 @@ class SelectionCreateListView(HTTPMethodView):
 
 
 class SelectionRetrieveUpdateDestroyView(HTTPMethodView):
+    async def get(self, request, subject, id):
+        """
+        선택지 디테일
+        """
+        query_selection = db_session.query(Selection). \
+            filter(Question.subject == subject). \
+            filter_by(id=id).one()
+        if query_selection is None:
+            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+
+        return json({
+            'question_subject': query_selection.question.subject,
+            'id': query_selection.id,
+            'select': query_selection.select
+        }, status=200)
 
     async def delete(self, request, subject, id):
         """
