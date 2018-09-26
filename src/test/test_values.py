@@ -74,6 +74,10 @@ class TestQuestionValues:
         'subject': 'dummy',
         'title': '테스트 질문'
     }
+    put = {
+        'subject': 'dummy',
+        'title': '안녕하세요'
+    }
     empty = {
         'subject': '',
         'title': ''

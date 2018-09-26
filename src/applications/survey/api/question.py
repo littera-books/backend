@@ -76,6 +76,33 @@ class QuestionRetrieveUpdateDeleteView(HTTPMethodView):
             'title': query_question.title
         }, status=200)
 
+    async def put(self, request, subject):
+        """
+        질문 수정
+        """
+        data = request.json
+
+        is_full = empty_validation(data)
+        if is_full is False:
+            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+        subject_length = length_validation(data['subject'], 50)
+        if subject_length is False:
+            return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
+
+        query_question = query_validation(db_session, Question, subject=subject)
+        if query_question is None:
+            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+
+        query_question.title = data['title']
+        db_session.commit()
+        db_session.flush()
+
+        return json({
+            'subject': query_question.subject,
+            'title': query_question.title
+        }, status=200)
+
     async def delete(self, request, subject):
         """
         질문 삭제
