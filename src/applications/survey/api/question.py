@@ -62,6 +62,19 @@ class QuestionCreateListView(HTTPMethodView):
 
 
 class QuestionRetrieveUpdateDeleteView(HTTPMethodView):
+    async def get(self, request, subject):
+        """
+        질문 디테일
+        """
+
+        query_question = query_validation(db_session, Question, subject=subject)
+        if query_question is None:
+            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+
+        return json({
+            'subject': query_question.subject,
+            'title': query_question.title
+        }, status=200)
 
     async def delete(self, request, subject):
         """
