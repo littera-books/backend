@@ -55,8 +55,31 @@ class SelectionCreateListView(HTTPMethodView):
 
         return json({
             'question_subject': query_question.subject,
+            'id': query_question.selection[-1].id,
             'select': query_question.selection[-1].select
         }, status=201)
 
 
+class SelectionRetrieveUpdateDestroyView(HTTPMethodView):
+
+    async def delete(self, request, subject, id):
+        """
+        선택지 삭제
+        """
+        query_selection = db_session.query(Selection). \
+            filter(Question.subject == subject). \
+            filter_by(id=id).one()
+        if query_selection is None:
+            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+
+        db_session.delete(query_selection)
+        db_session.commit()
+        db_session.flush()
+        db_session.close()
+
+        return json(None, status=204)
+
+
 blueprint.add_route(SelectionCreateListView.as_view(), '/survey/question/<subject>/selection', strict_slashes=True)
+blueprint.add_route(SelectionRetrieveUpdateDestroyView.as_view(), '/survey/question/<subject>/selection/<id>',
+                    strict_slashes=True)

@@ -39,3 +39,22 @@ class TestSelectionAPI(unittest.TestCase):
         )
         self.assertEqual(response.status, 201)
         self.assertEqual(response.json.get('select'), TestSelectionValues.default['select'])
+
+    #     선택지 삭제 테스트     #
+
+    def test_selection_delete_succeed(self):
+        """
+        url로 선택지 삭제 테스트 성공
+        """
+        request, response = APP.test_client.post(
+            f'/survey/question/{TestQuestionValues.default["subject"]}/selection',
+            data=json.dumps(TestSelectionValues.default)
+        )
+        self.assertEqual(response.status, 201)
+
+        selection_id = response.json.get('id')
+
+        request, response = APP.test_client.delete(
+            f'/survey/question/{TestQuestionValues.default["subject"]}/selection/{selection_id}'
+        )
+        self.assertEqual(response.status, 204)
