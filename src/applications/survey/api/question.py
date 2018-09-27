@@ -1,5 +1,4 @@
 from sanic import Blueprint
-from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
@@ -10,115 +9,116 @@ from ..model import Question
 blueprint = Blueprint('SurveyQuestion')
 
 
-class QuestionCreateListView(HTTPMethodView):
+@blueprint.route('/survey/question', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request):
+    """
+    질문 리스트 반환
+    """
+    query_question = db_session.query(Question).order_by(Question.created_at).all()
 
-    async def get(self, request):
-        """
-        질문 리스트 반환
-        """
-        query_question = db_session.query(Question).order_by(Question.created_at).all()
+    result = {
+        'length': len(query_question),
+        'items': []
+    }
 
-        result = {
-            'length': len(query_question),
-            'items': []
+    for question in query_question:
+        item = {
+            'id': question.id,
+            'subject': question.subject,
+            'title': question.title
         }
+        result['items'].append(item)
 
-        for question in query_question:
-            item = {
-                'id': question.id,
-                'subject': question.subject,
-                'title': question.title
-            }
-            result['items'].append(item)
-
-        return json(result, status=200)
-
-    async def post(self, request):
-        """
-        질문 생성
-        """
-        data = request.json
-
-        is_full = empty_validation(data)
-        if is_full is False:
-            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
-
-        subject_length = length_validation(data['subject'], 50)
-        if subject_length is False:
-            return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
-
-        question = Question(**data)
-        db_session.add(question)
-        db_session.commit()
-        db_session.flush()
-        db_session.close()
-
-        query_question = query_validation(db_session, Question, subject=data['subject'])
-
-        return json({
-            'subject': query_question.subject,
-            'title': query_question.title
-        }, status=201)
+    return json(result, status=200)
 
 
-class QuestionRetrieveUpdateDeleteView(HTTPMethodView):
-    async def get(self, request, subject):
-        """
-        질문 디테일
-        """
+@blueprint.route('/survey/question', methods=['POST'], strict_slashes=True)
+async def post(request):
+    """
+    질문 생성
+    """
+    data = request.json
 
-        query_question = query_validation(db_session, Question, subject=subject)
-        if query_question is None:
-            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        return json({
-            'subject': query_question.subject,
-            'title': query_question.title
-        }, status=200)
+    subject_length = length_validation(data['subject'], 50)
+    if subject_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
 
-    async def put(self, request, subject):
-        """
-        질문 수정
-        """
-        data = request.json
+    question = Question(**data)
+    db_session.add(question)
+    db_session.commit()
+    db_session.flush()
+    db_session.close()
 
-        is_full = empty_validation(data)
-        if is_full is False:
-            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+    query_question = query_validation(db_session, Question, subject=data['subject'])
 
-        subject_length = length_validation(data['subject'], 50)
-        if subject_length is False:
-            return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
-
-        query_question = query_validation(db_session, Question, subject=subject)
-        if query_question is None:
-            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
-
-        query_question.title = data['title']
-        db_session.commit()
-        db_session.flush()
-
-        return json({
-            'subject': query_question.subject,
-            'title': query_question.title
-        }, status=200)
-
-    async def delete(self, request, subject):
-        """
-        질문 삭제
-        """
-
-        query_question = query_validation(db_session, Question, subject=subject)
-        if query_question is None:
-            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
-
-        db_session.delete(query_question)
-        db_session.commit()
-        db_session.flush()
-        db_session.close()
-
-        return json(None, status=204)
+    return json({
+        'subject': query_question.subject,
+        'title': query_question.title
+    }, status=201)
 
 
-blueprint.add_route(QuestionCreateListView.as_view(), '/survey/question', strict_slashes=True)
-blueprint.add_route(QuestionRetrieveUpdateDeleteView.as_view(), '/survey/question/<subject>', strict_slashes=True)
+@blueprint.route('/survey/question/<subject>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, subject):
+    """
+    질문 디테일
+    """
+
+    query_question = query_validation(db_session, Question, subject=subject)
+    if query_question is None:
+        return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+
+    return json({
+        'subject': query_question.subject,
+        'title': query_question.title
+    }, status=200)
+
+
+@blueprint.route('/survey/question/<subject>', methods=['PUT'], strict_slashes=True)
+async def put(request, subject):
+    """
+    질문 수정
+    """
+    data = request.json
+
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+    subject_length = length_validation(data['subject'], 50)
+    if subject_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
+
+    query_question = query_validation(db_session, Question, subject=subject)
+    if query_question is None:
+        return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+
+    query_question.title = data['title']
+    db_session.commit()
+    db_session.flush()
+
+    return json({
+        'subject': query_question.subject,
+        'title': query_question.title
+    }, status=200)
+
+
+@blueprint.route('/survey/question/<subject>', methods=['DELETE'], strict_slashes=True)
+async def delete(request, subject):
+    """
+    질문 삭제
+    """
+
+    query_question = query_validation(db_session, Question, subject=subject)
+    if query_question is None:
+        return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
+
+    db_session.delete(query_question)
+    db_session.commit()
+    db_session.flush()
+    db_session.close()
+
+    return json(None, status=204)
