@@ -24,3 +24,12 @@ class Selection(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     question_id = Column(Integer, ForeignKey('question.id'))
     question = relationship('Question', back_populates='selection')
+    user = relationship('SurveyResult', back_populates='selection')
+
+
+class SurveyResult(Base):
+    __tablename__ = 'survey_result'
+    user_id = Column(Integer, ForeignKey('littera_user.id'), primary_key=True)
+    selection_id = Column(Integer, ForeignKey('selection.id'), primary_key=True)
+    user = relationship('User', back_populates='selection')
+    selection = relationship('Selection', back_populates='user')
