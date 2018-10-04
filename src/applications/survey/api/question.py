@@ -32,6 +32,38 @@ async def get(request):
     return json(result, status=200)
 
 
+@blueprint.route('/survey/questions', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request):
+    """
+    질문 및 선택지 리스트 반환
+    """
+    query_question = db_session.query(Question).order_by(Question.created_at).all()
+
+    result = {
+        'length': len(query_question),
+        'items': []
+    }
+
+    for question in query_question:
+        item = {
+            'id': question.id,
+            'subject': question.subject,
+            'title': question.title,
+            'selection_items': [],
+        }
+
+        for selection in question.selection:
+            selection_item = {
+                'id': selection.id,
+                'select': selection.select,
+            }
+            item['selection_items'].append(selection_item)
+
+        result['items'].append(item)
+
+    return json(result, status=200)
+
+
 @blueprint.route('/survey/question', methods=['POST'], strict_slashes=True)
 async def post(request):
     """
