@@ -10,7 +10,7 @@ HOST = secret_json['HOST']
 PASSWORD = secret_json['PASSWORD']
 
 engine = create_engine(
-    f'postgresql://{DB_USER}:{PASSWORD}@{HOST}/{DB_NAME}', echo=True)
+    f'postgresql://{DB_USER}:{PASSWORD}@{HOST}/{DB_NAME}', echo=False)
 
 db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine))
