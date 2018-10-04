@@ -24,7 +24,7 @@ class Selection(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     question_id = Column(Integer, ForeignKey('question.id'))
     question = relationship('Question', back_populates='selection')
-    user = relationship('SurveyResult', back_populates='selection')
+    user = relationship('SurveyResult', back_populates='selection', cascade='all, delete-orphan')
 
 
 class SurveyResult(Base):

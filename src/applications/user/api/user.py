@@ -43,6 +43,7 @@ class UserCreateView(HTTPMethodView):
         query_user = query_validation(db_session, User, username=data['username'])
 
         return json({
+            'id': query_user.id,
             'username': query_user.username,
             'email': query_user.email,
             'phone': query_user.phone
