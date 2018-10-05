@@ -10,7 +10,7 @@ from applications.survey.api import question, selection, survey_result
 from applications.message import api as message_api
 
 APP = Sanic(__name__)
-CORS(APP, resources={r'/*': {'origins': 'http://localhost:3000'}})
+CORS(APP, resources={r'/*': {'origins': ['http://localhost:3000', 'http://localhost:3006']}})
 
 Initialize(instance=user.blueprint,
            app=APP,
