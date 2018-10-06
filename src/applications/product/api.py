@@ -10,7 +10,31 @@ from .model import Product
 blueprint = Blueprint('Product')
 
 
-@blueprint.route('/product', methods=['OPTIONS', 'POST'], strict_slashes=True)
+@blueprint.route('/product', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request):
+    """
+    상품 리스트 보기
+    """
+    query_product = db_session.query(Product).order_by(Product.created_at).all()
+
+    result = {
+        'length': len(query_product),
+        'items': []
+    }
+
+    for product in query_product:
+        item = {
+            'id': product.id,
+            'months': product.months,
+            'price': product.price,
+            'description': product.description
+        }
+        result['items'].append(item)
+
+    return json(result, status=200)
+
+
+@blueprint.route('/product', methods=['POST'], strict_slashes=True)
 async def post(request):
     """
     상품 생성
@@ -42,6 +66,9 @@ async def post(request):
 
 @blueprint.route('/product/<months>', methods=['OPTIONS', 'DELETE'], strict_slashes=True)
 async def delete(request, months):
+    """
+    상품 삭제
+    """
     query_product = query_validation(db_session, Product, months=months)
     if query_product is None:
         return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)

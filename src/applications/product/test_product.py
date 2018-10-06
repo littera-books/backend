@@ -15,8 +15,22 @@ class TestProductAPI(unittest.TestCase):
         )
 
     def test_product_create_succeed(self):
+        """
+        상품 생성 테스트 성공
+        """
         request, response = APP.test_client.post(
             '/product', data=json.dumps(TestProductValues.default)
         )
         self.assertEqual(response.status, 201)
         self.assertEqual(response.json.get('months'), TestProductValues.default['months'])
+
+    def test_product_get_list_succeed(self):
+        """
+        상품 리스트 보기 테스트 성공
+        """
+        APP.test_client.post(
+            '/product', data=json.dumps(TestProductValues.default)
+        )
+
+        request, response = APP.test_client.get('/product')
+        self.assertEqual(response.status, 200)
