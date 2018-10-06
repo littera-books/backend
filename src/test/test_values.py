@@ -92,3 +92,11 @@ class TestSelectionValues:
     default = {
         'select': '테스트 선택지'
     }
+
+
+class TestProductValues:
+    default = {
+        'months': 3,
+        'price': 99000,
+        'description': '3개월 구독권'
+    }
