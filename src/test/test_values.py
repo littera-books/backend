@@ -96,7 +96,7 @@ class TestSelectionValues:
 
 class TestProductValues:
     default = {
-        'months': 3,
-        'price': 99000,
-        'description': '3개월 구독권'
+        'months': 30,
+        'price': 990000,
+        'description': '30개월 구독권'
     }
