@@ -46,7 +46,22 @@ async def post(request):
     }, status=201)
 
 
-@blueprint.route('/user/<user_id>', methods=['OPTIONS', 'PUT'], strict_slashes=True)
+@blueprint.route('/user/<user_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, user_id):
+    """
+    회원 정보 호출
+    """
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    return json({
+        'id': query_user.id,
+        'email': query_user.email,
+    }, status=200)
+
+
+@blueprint.route('/user/<user_id>', methods=['PUT'], strict_slashes=True)
 async def put(request, user_id):
     """
     회원 정보 수정
