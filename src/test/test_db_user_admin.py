@@ -24,7 +24,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = query_validation(self.session, User, username=TestUserValues.default['username'])
+        query_user = query_validation(self.session, User, email=TestUserValues.default['email'])
         self.assertEqual(dummy_user, query_user)
 
     def test_user_patch(self):
@@ -34,7 +34,7 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = query_validation(self.session, User, username=TestUserValues.default['username'])
+        query_user = query_validation(self.session, User, email=TestUserValues.default['email'])
 
         query_user.email = TestUserValues.put['email']
         query_user.phone = TestUserValues.put['phone']
@@ -51,11 +51,11 @@ class TestDBUserAdmin(unittest.TestCase):
         dummy_user = User(**TestUserValues.default)
         self.session.add(dummy_user)
 
-        query_user = query_validation(self.session, User, username=TestUserValues.default['username'])
+        query_user = query_validation(self.session, User, email=TestUserValues.default['email'])
         self.session.delete(query_user)
 
         is_exists = self.session.query(User).filter_by(
-            username=TestUserValues.default['username']).count()
+            email=TestUserValues.default['email']).count()
         self.assertEqual(is_exists, 0)
 
     #     관리자 테스트     #

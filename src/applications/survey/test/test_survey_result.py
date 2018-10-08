@@ -41,7 +41,7 @@ class TestSurveyResultAPI(unittest.TestCase):
         )
 
         APP.test_client.delete(
-            f'/user/{TestUserValues.default["username"]}', data=json.dumps(TestUserValues.default))
+            f'/user/{self.dummy_user_id}', data=json.dumps(TestUserValues.default))
 
     def test_survey_result_create_succeed(self):
         """

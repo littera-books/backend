@@ -34,7 +34,7 @@ class TestDBSurveyResult(unittest.TestCase):
         """
         설문 결과 생성 테스트 성공
         """
-        query_user = self.session.query(User).filter_by(username=TestUserValues.default['username']).one()
+        query_user = self.session.query(User).filter_by(email=TestUserValues.default['email']).one()
         query_selection = self.session.query(Selection).filter_by(select=TestSelectionValues.default['select']).one()
 
         dummy_survey_result = SurveyResult()

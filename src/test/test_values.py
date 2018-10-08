@@ -69,7 +69,7 @@ class TestUserValues:
         'first_name': 'dummy',
         'address': '서울시 행복구 희망동',
         'email': 'dummy@test.com',
-        'phone': '010123456789',
+        'phone': '0101234567801012345678',
         'password': '1234'
     }
     none = {
