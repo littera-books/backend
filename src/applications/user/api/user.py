@@ -1,5 +1,4 @@
 from sanic import Blueprint
-from sanic.views import HTTPMethodView
 from sanic.response import json
 
 from common.database import db_session
@@ -10,130 +9,130 @@ from ..model import User
 blueprint = Blueprint('User')
 
 
-class UserCreateView(HTTPMethodView):
+@blueprint.route('/user', methods=['OPTIONS', 'POST'], strict_slashes=True)
+async def post(request):
     """
-    유저 관련 메서드 집합
-    1. POST: 회원 가입
+    회원 가입
     """
+    data = request.json
 
-    async def post(self, request):
-        """
-        회원 가입
-        """
-        data = request.json
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        is_full = empty_validation(data)
-        if is_full is False:
-            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+    first_name_length = length_validation(data['first_name'], 20)
+    if first_name_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
 
-        username_length = length_validation(data['username'], 50)
-        if username_length is False:
-            return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
+    last_name_length = length_validation(data['last_name'], 20)
+    if last_name_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
 
-        phone_length = length_validation(data['phone'], 11)
-        if phone_length is False:
-            return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
+    phone_length = length_validation(data['phone'], 20)
+    if phone_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
-        user = User(**data)
-        db_session.add(user)
-        db_session.commit()
-        db_session.flush()
-        db_session.close()
+    user = User(**data)
+    db_session.add(user)
+    db_session.commit()
+    db_session.flush()
+    db_session.close()
 
-        query_user = query_validation(db_session, User, username=data['username'])
+    query_user = query_validation(db_session, User, email=data['email'])
 
-        return json({
-            'id': query_user.id,
-            'username': query_user.username,
-            'email': query_user.email,
-            'phone': query_user.phone
-        }, status=201)
+    return json({
+        'id': query_user.id,
+        'email': query_user.email,
+    }, status=201)
 
 
-class UserUpdateDestroyView(HTTPMethodView):
+@blueprint.route('/user/<user_id>', methods=['OPTIONS', 'PUT'], strict_slashes=True)
+async def put(request, user_id):
     """
-    유저 관련 메서드 집합
-    1. PUT: 정보 수정
-    2. PATCH: 비밀번호 수정
-    3. DELETE: 회원 탈퇴
+    회원 정보 수정
     """
+    data = request.json
 
-    async def put(self, request, username):
-        """
-        회원 정보 수정
-        """
-        data = request.json
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-        is_full = empty_validation(data)
-        if is_full is False:
-            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+    first_name_length = length_validation(data['first_name'], 20)
+    if first_name_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
 
-        phone_length = length_validation(data['phone'], 11)
-        if phone_length is False:
-            return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
+    last_name_length = length_validation(data['last_name'], 20)
+    if last_name_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
 
-        query_user = query_validation(db_session, User, username=username)
-        if query_user is None:
-            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+    phone_length = length_validation(data['phone'], 20)
+    if phone_length is False:
+        return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
-        query_user.email = data['email']
-        query_user.phone = data['phone']
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
-        db_session.commit()
-        db_session.flush()
+    query_user.first_name = data['first_name']
+    query_user.last_name = data['last_name']
+    query_user.address = data['address']
+    query_user.email = data['email']
+    query_user.phone = data['phone']
 
-        return json({
-            'username': query_user.username,
-            'email': query_user.email,
-            'phone': query_user.phone
-        }, status=200)
+    db_session.commit()
+    db_session.flush()
 
-    async def patch(self, request, username):
-        """
-        비밀번호 수정
-        """
-        data = request.json
-
-        is_full = empty_validation(data)
-        if is_full is False:
-            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
-
-        query_user = query_validation(db_session, User, username=username)
-        if query_user is None:
-            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
-
-        query_user.password = data['password']
-
-        db_session.commit()
-        db_session.flush()
-        db_session.close()
-
-        return json({'message': SUCCEED_MESSAGE['patch_password']}, status=200)
-
-    async def delete(self, request, username):
-        """
-        회원 탈퇴
-        """
-        data = request.json
-
-        is_full = empty_validation(data)
-        if is_full is False:
-            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
-
-        query_user = query_validation(db_session, User, username=username)
-        if query_user is None:
-            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
-
-        if query_user.password != data['password']:
-            return json({'message': EXCEPTION_MESSAGE['invalid_password']}, status=400)
-
-        db_session.delete(query_user)
-        db_session.commit()
-        db_session.flush()
-        db_session.close()
-
-        return json(None, status=204)
+    return json({
+        'id': query_user.id,
+        'email': query_user.email,
+    }, status=200)
 
 
-blueprint.add_route(UserCreateView.as_view(), '/user', strict_slashes=True)
-blueprint.add_route(UserUpdateDestroyView.as_view(), '/user/<username>', strict_slashes=True)
+@blueprint.route('/user/<user_id>', methods=['PATCH'], strict_slashes=True)
+async def patch(request, user_id):
+    """
+    비밀번호 수정
+    """
+    data = request.json
+
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    query_user.password = data['password']
+
+    db_session.commit()
+    db_session.flush()
+    db_session.close()
+
+    return json({'message': SUCCEED_MESSAGE['patch_password']}, status=200)
+
+
+@blueprint.route('/user/<user_id>', methods=['DELETE'], strict_slashes=True)
+async def delete(request, user_id):
+    """
+    회원 탈퇴
+    """
+    data = request.json
+
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    if query_user.password != data['password']:
+        return json({'message': EXCEPTION_MESSAGE['invalid_password']}, status=400)
+
+    db_session.delete(query_user)
+    db_session.commit()
+    db_session.flush()
+    db_session.close()
+
+    return json(None, status=204)
