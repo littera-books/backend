@@ -29,41 +29,54 @@ class TestUserValues:
     유저 테스트용 더미 값들
     """
     default = {
-        'username': 'dummy',
+        'last_name': 'hummy',
+        'first_name': 'dummy',
+        'address': '서울시 행복구 희망동',
         'email': 'dummy@test.com',
         'phone': '01012345678',
         'password': '1234'
     }
     put = {
-        'username': 'dummy',
+        'last_name': 'hummy',
+        'first_name': 'dummy',
+        'address': '서울시 별빛구 달빛동',
         'email': 'chubby@test.com',
         'phone': '01098765432'
     }
     patch = {
-        'username': 'dummy',
+        'last_name': 'hummy',
+        'first_name': 'dummy',
         'password': 'abcd'
     }
     empty = {
-        'username': '',
+        'last_name': '',
+        'first_name': '',
+        'address': '',
         'email': '',
         'phone': '',
         'password': ''
     }
     invalid_password = {
-        'username': 'dummy',
+        'last_name': 'hummy',
+        'first_name': 'dummy',
+        'address': '서울시 행복구 희망동',
         'email': 'dummy@test.com',
         'phone': '01012345678',
         'password': '4321'
     }
     invalid_phone = {
-        'username': 'dummy',
+        'last_name': 'hummy',
+        'first_name': 'dummy',
+        'address': '서울시 행복구 희망동',
         'email': 'dummy@test.com',
         'phone': '010123456789',
         'password': '1234'
     }
     none = {
-        'username': 'coffee',
-        'email': 'dummy@test.com',
+        'last_name': 'hummy',
+        'first_name': 'dummy',
+        'address': '서울시 행복구 희망동',
+        'email': 'none_email@test.com',
         'phone': '01012345678',
         'password': '1234'
     }
