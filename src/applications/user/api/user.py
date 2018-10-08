@@ -57,6 +57,10 @@ async def get(request, user_id):
 
     return json({
         'id': query_user.id,
+        'first_name': query_user.first_name,
+        'last_name': query_user.last_name,
+        'address': query_user.address,
+        'phone': query_user.phone,
         'email': query_user.email,
     }, status=200)
 

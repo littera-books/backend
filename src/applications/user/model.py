@@ -28,10 +28,5 @@ class User(Base):
         sanic-jwt 에 user 정보를 dict 형태로 전달하는 메서드
         """
         return {
-            'user_id': self.id,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'address': self.address,
-            'email': self.email,
-            'phone': self.phone,
+            'user_id': self.id
         }
