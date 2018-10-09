@@ -56,7 +56,7 @@ class TestSurveyResultAPI(unittest.TestCase):
 
 class TestResignResultAPI(unittest.TestCase):
     def test_resign_survey_create_succeed(self):
-        request, response = APP.test_client.post('/survey/resign', data=json.dumps(TestResignSurveyValues.default))
+        request, response = APP.test_client.post('/survey/resign', data=TestResignSurveyValues.default)
         self.assertEqual(response.status, 201)
         self.assertEqual(response.json.get('content'), TestResignSurveyValues.default['content'])
         self.id = response.json.get('id')
