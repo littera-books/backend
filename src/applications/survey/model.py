@@ -33,3 +33,10 @@ class SurveyResult(Base):
     selection_id = Column(Integer, ForeignKey('selection.id'), primary_key=True)
     user = relationship('User', back_populates='selection')
     selection = relationship('Selection', back_populates='user')
+
+
+class ResignSurvey(Base):
+    __tablename__ = 'resign_survey'
+    id = Column(Integer, primary_key=True)
+    content = Column(String, unique=False, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

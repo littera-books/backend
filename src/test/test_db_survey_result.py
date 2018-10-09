@@ -5,8 +5,8 @@ from sqlalchemy.orm import sessionmaker
 from common.database import Base
 from applications.user.model import User
 from applications.admin.model import Admin
-from applications.survey.model import Question, Selection, SurveyResult
-from .test_values import TestUserValues, TestAdminValues, TestQuestionValues, TestSelectionValues
+from applications.survey.model import Question, Selection, SurveyResult, ResignSurvey
+from .test_values import TestUserValues, TestAdminValues, TestQuestionValues, TestSelectionValues, TestResignSurveyValues
 
 
 class TestDBSurveyResult(unittest.TestCase):
@@ -46,3 +46,24 @@ class TestDBSurveyResult(unittest.TestCase):
 
         query_survey_result = self.session.query(SurveyResult).filter(SurveyResult.user_id == query_user.id).one()
         self.assertEqual(query_survey_result.selection.select, TestSelectionValues.default['select'])
+
+
+class TestDBResignSurvey(unittest.TestCase):
+    def setUp(self):
+        self.engine = create_engine('sqlite:///:memory:', echo=True)
+        self.sessionmaker = sessionmaker(bind=self.engine)
+        self.session = self.sessionmaker()
+        self.base = Base
+        Base.metadata.create_all(bind=self.engine)
+
+    def test_resign_survey_create_succeed(self):
+        """
+        탈퇴 설문 생성 테스트 성공
+        """
+        dummy_resign_survey = ResignSurvey(**TestResignSurveyValues.default)
+
+        self.session.add(dummy_resign_survey)
+        self.session.commit()
+
+        query_resign_survey = self.session.query(ResignSurvey).first()
+        self.assertEqual(query_resign_survey.content, TestResignSurveyValues.default['content'])

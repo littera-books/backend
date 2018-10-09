@@ -2,7 +2,7 @@ import json
 import unittest
 
 from main import APP
-from src.test.test_values import TestUserValues, TestQuestionValues, TestSelectionValues
+from src.test.test_values import TestUserValues, TestQuestionValues, TestSelectionValues, TestResignSurveyValues
 
 
 class TestSurveyResultAPI(unittest.TestCase):
@@ -53,3 +53,13 @@ class TestSurveyResultAPI(unittest.TestCase):
         self.assertEqual(response.status, 201)
         self.assertEqual(response.json.get('selection'), TestSelectionValues.default['select'])
 
+
+class TestResignResultAPI(unittest.TestCase):
+    def test_resign_survey_create_succeed(self):
+        request, response = APP.test_client.post('/survey/resign', data=json.dumps(TestResignSurveyValues.default))
+        self.assertEqual(response.status, 201)
+        self.assertEqual(response.json.get('content'), TestResignSurveyValues.default['content'])
+        self.id = response.json.get('id')
+
+        request, response = APP.test_client.delete(f'/survey/resign/{self.id}')
+        self.assertEqual(response.status, 204)

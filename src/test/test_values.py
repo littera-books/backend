@@ -113,3 +113,9 @@ class TestProductValues:
         'price': 990000,
         'description': '30개월 구독권'
     }
+
+
+class TestResignSurveyValues:
+    default = {
+        'content': '별로에요',
+    }
