@@ -7,6 +7,7 @@ from common.database import Base
 
 class Message(Base):
     __tablename__ = 'message'
+    id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('littera_user.id'), primary_key=True)
     admin_id = Column(Integer, ForeignKey('littera_admin.id'), primary_key=True)
     body = Column(String)

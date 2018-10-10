@@ -1,17 +1,46 @@
 from sanic import Blueprint
-from sanic.views import HTTPMethodView
 from sanic.response import json
+
+from common.database import db_session
+from common.messages import EXCEPTION_MESSAGE
+from common.validation import empty_validation, query_validation
+from applications.admin.model import Admin
+from .model import Message
 
 blueprint = Blueprint('Message')
 
 
-class MessageView(HTTPMethodView):
+@blueprint.route('/message/<user_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, user_id):
+    return json({
+        'id': user_id,
+    }, status=200)
+
+
+@blueprint.route('/message/<user_id>', methods=['POST'], strict_slashes=True)
+async def post(request, user_id):
     """
-    메시지: 메시지 메서드 집합
+    메시지 생성
     """
+    raw_data = request.form
 
-    async def get(self, request):
-        return json({'message': 'message api'}, status=200)
+    is_full = empty_validation(raw_data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
+    raw_content_value = raw_data['content'][0]
 
-blueprint.add_route(MessageView.as_view(), '/message', strict_slashes=True)
+    query_admin = db_session.query(Admin).first()
+
+    message = Message()
+    message.body = raw_content_value
+    message.user_id = user_id
+    message.admin_id = query_admin.id
+
+    db_session.add(message)
+    db_session.commit()
+    db_session.flush()
+
+    return json({
+        'user_id': message.user_id
+    }, status=201)
