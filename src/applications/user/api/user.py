@@ -9,7 +9,12 @@ from ..model import User
 blueprint = Blueprint('User')
 
 
-@blueprint.route('/user', methods=['OPTIONS', 'POST'], strict_slashes=True)
+@blueprint.route('/user', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request):
+    return json(None, status=200)
+
+
+@blueprint.route('/user', methods=['POST'], strict_slashes=True)
 async def post(request):
     """
     회원 가입
