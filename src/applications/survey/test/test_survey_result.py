@@ -51,7 +51,6 @@ class TestSurveyResultAPI(unittest.TestCase):
             f'/survey/result/{self.dummy_user_id}', data=json.dumps(self.data)
         )
         self.assertEqual(response.status, 201)
-        self.assertEqual(response.json.get('selection'), TestSelectionValues.default['select'])
 
 
 class TestResignResultAPI(unittest.TestCase):
