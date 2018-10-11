@@ -32,7 +32,7 @@ async def get(request, user_id):
             'created_at': message.created_at,
         }
 
-        result['items'].append(item)
+        result['items'].insert(0, item)
 
     return json(result, status=200)
 
