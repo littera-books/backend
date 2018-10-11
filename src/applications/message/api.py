@@ -64,3 +64,19 @@ async def post(request, user_id):
     return json({
         'user_id': message.user_id
     }, status=201)
+
+
+@blueprint.route('/message/<user_id>/<message_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, user_id, message_id):
+    """
+    메시지 디테일
+    """
+    query_message = db_session.query(Message).\
+        filter_by(user_id=user_id).\
+        filter_by(id=message_id).one()
+
+    return json({
+        'message_id': query_message.id,
+        'body': query_message.body,
+        'created_at': query_message.created_at,
+    }, status=200)
