@@ -1,3 +1,4 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.views import HTTPMethodView
 from sanic.response import json
@@ -32,11 +33,18 @@ class AdminView(HTTPMethodView):
         if username_length is False:
             return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
 
-        user = Admin(**data)
-        db_session.add(user)
-        db_session.commit()
-        db_session.flush()
-        db_session.close()
+        try:
+            user = Admin(**data)
+            db_session.add(user)
+            db_session.commit()
+        except sqlalchemy.exc.IntegrityError as e:
+            error_message = e.orig.diag.message_detail
+            db_session.rollback()
+            return json({
+                'message': error_message
+            }, status=400)
+        finally:
+            db_session.close()
 
         query_user = query_validation(db_session, Admin, username=data['username'])
 
