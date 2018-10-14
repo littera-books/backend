@@ -24,9 +24,18 @@ def query_validation(session, model, **kwargs):
         query_instance = session.query(model).filter_by(**kwargs).one()
 
     except sqlalchemy.exc.IntegrityError:
+        session.rollback()
+        session.close()
         return None
 
     except sqlalchemy.orm.exc.NoResultFound:
+        session.rollback()
+        session.close()
+        return None
+
+    except sqlalchemy.exc.DataError:
+        session.rollback()
+        session.close()
         return None
 
     return query_instance
