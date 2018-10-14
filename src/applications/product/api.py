@@ -81,6 +81,36 @@ async def get(request, product_id):
     }, status=200)
 
 
+@blueprint.route('/product/<product_id>', methods=['PUT'], strict_slashes=True)
+async def put(request, product_id):
+    """
+    상품 수정
+    """
+    data = request.json
+
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+    query_product = query_validation(db_session, Product, id=product_id)
+    if query_product is None:
+        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
+
+    query_product.months = data['months']
+    query_product.price = data['price']
+    query_product.description = data['description']
+
+    db_session.commit()
+    db_session.flush()
+
+    return json({
+        'id': query_product.id,
+        'months': query_product.months,
+        'price': query_product.price,
+        'description': query_product.description,
+    }, status=200)
+
+
 @blueprint.route('/product/<product_id>', methods=['DELETE'], strict_slashes=True)
 async def delete(request, product_id):
     """
