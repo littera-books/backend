@@ -105,14 +105,20 @@ async def put(request, user_id):
     if query_user is None:
         return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
-    query_user.first_name = data['first_name']
-    query_user.last_name = data['last_name']
-    query_user.address = data['address']
-    query_user.email = data['email']
-    query_user.phone = data['phone']
-
-    db_session.commit()
-    db_session.flush()
+    try:
+        query_user.first_name = data['first_name']
+        query_user.last_name = data['last_name']
+        query_user.address = data['address']
+        query_user.email = data['email']
+        query_user.phone = data['phone']
+        db_session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
+        db_session.close()
+        return json({
+            'message': error_message
+        }, status=400)
 
     return json({
         'id': query_user.id,
