@@ -136,9 +136,16 @@ async def put(request, subject):
     if query_question is None:
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
-    query_question.title = data['title']
-    db_session.commit()
-    db_session.flush()
+    try:
+        query_question.title = data['title']
+        db_session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
+        db_session.close()
+        return json({
+            'message': error_message
+        }, status=400)
 
     return json({
         'subject': query_question.subject,
