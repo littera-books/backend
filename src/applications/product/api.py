@@ -1,3 +1,4 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
@@ -49,11 +50,18 @@ async def post(request):
     if description_length is False:
         return json({'message': EXCEPTION_MESSAGE['invalid_description']}, status=400)
 
-    product = Product(**data)
-    db_session.add(product)
-    db_session.commit()
-    db_session.flush()
-    db_session.close()
+    try:
+        product = Product(**data)
+        db_session.add(product)
+        db_session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
+        return json({
+            'message': error_message
+        }, status=400)
+    finally:
+        db_session.close()
 
     query_product = query_validation(db_session, Product, months=data['months'])
 
@@ -97,12 +105,18 @@ async def put(request, product_id):
     if query_product is None:
         return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
 
-    query_product.months = data['months']
-    query_product.price = data['price']
-    query_product.description = data['description']
-
-    db_session.commit()
-    db_session.flush()
+    try:
+        query_product.months = data['months']
+        query_product.price = data['price']
+        query_product.description = data['description']
+        db_session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
+        db_session.close()
+        return json({
+            'message': error_message
+        }, status=400)
 
     return json({
         'id': query_product.id,
