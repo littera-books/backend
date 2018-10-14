@@ -1,3 +1,4 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
@@ -79,11 +80,18 @@ async def post(request):
     if subject_length is False:
         return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
 
-    question = Question(**data)
-    db_session.add(question)
-    db_session.commit()
-    db_session.flush()
-    db_session.close()
+    try:
+        question = Question(**data)
+        db_session.add(question)
+        db_session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
+        return json({
+            'message': error_message
+        }, status=400)
+    finally:
+        db_session.close()
 
     query_question = query_validation(db_session, Question, subject=data['subject'])
 
