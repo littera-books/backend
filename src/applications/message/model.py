@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, Sequence, String, Integer, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -7,7 +7,7 @@ from common.database import Base
 
 class Message(Base):
     __tablename__ = 'message'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, Sequence('message_id_seq'), primary_key=True)
     user_id = Column(Integer, ForeignKey('littera_user.id'), primary_key=True)
     admin_id = Column(Integer, ForeignKey('littera_admin.id'), primary_key=True)
     body = Column(String)
