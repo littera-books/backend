@@ -1,3 +1,4 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
@@ -37,11 +38,18 @@ async def post(request):
     if phone_length is False:
         return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
 
-    user = User(**data)
-    db_session.add(user)
-    db_session.commit()
-    db_session.flush()
-    db_session.close()
+    try:
+        user = User(**data)
+        db_session.add(user)
+        db_session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
+        return json({
+            'message': error_message
+        }, status=400)
+    finally:
+        db_session.close()
 
     query_user = query_validation(db_session, User, email=data['email'])
 
