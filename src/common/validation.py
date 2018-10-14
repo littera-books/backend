@@ -1,3 +1,6 @@
+import sqlalchemy
+
+
 def empty_validation(data):
     """
     세 가지 메서드에 대해 validation 수행
@@ -17,7 +20,16 @@ def query_validation(session, model, **kwargs):
     :param kwargs: 쿼리를 찾으려는 kwargs
     :return: 존재하면 User 객체, 없으면 None
     """
-    return session.query(model).filter_by(**kwargs).first()
+    try:
+        query_instance = session.query(model).filter_by(**kwargs).one()
+
+    except sqlalchemy.exc.IntegrityError:
+        return None
+
+    except sqlalchemy.orm.exc.NoResultFound:
+        return None
+
+    return query_instance
 
 
 def length_validation(row, length):
