@@ -58,6 +58,7 @@ async def post(request):
     query_product = query_validation(db_session, Product, months=data['months'])
 
     return json({
+        'id': query_product.id,
         'months': query_product.months,
         'price': query_product.price,
         'description': query_product.description
