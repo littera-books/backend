@@ -103,3 +103,25 @@ async def put(request, product_id):
         'id': query_product.promotion.id,
         'code': query_product.promotion.code,
     }, status=200)
+
+
+@blueprint.route('/product/<product_id>/promotion', methods=['DELETE'], strict_slashes=True)
+async def delete(request, product_id):
+    """
+    프로모션 삭제
+    """
+    query_product = query_validation(db_session, Product, id=product_id)
+    if query_product is None:
+        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
+
+    if query_product.promotion is None:
+        return json({
+            'id': 0,
+            'code': ''
+        }, status=200)
+
+    db_session.delete(query_product.promotion)
+    db_session.commit()
+    db_session.close()
+
+    return json(None, status=204)
