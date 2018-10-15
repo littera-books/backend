@@ -27,6 +27,7 @@ async def get(request, question_id):
     for selection in query_question.selection:
         item = {
             'id': selection.id,
+            'is_accepted': selection.is_accepted,
             'select': selection.select
         }
         result['items'].append(item)
@@ -105,6 +106,7 @@ async def put(request, question_id, id):
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
     query_selection.select = data['select']
+    query_selection.is_accepted = data['is_accepted']
     db_session.commit()
     db_session.flush()
 

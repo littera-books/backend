@@ -103,7 +103,8 @@ class TestQuestionValues:
 
 class TestSelectionValues:
     default = {
-        'select': '테스트 선택지'
+        'select': '테스트 선택지',
+        'is_accepted': True,
     }
 
 
