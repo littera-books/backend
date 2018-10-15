@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from common.database import Base
@@ -11,6 +12,15 @@ class Product(Base):
     price = Column(Integer, unique=False, nullable=False, default=0)
     description = Column(String(length=100), unique=False, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    promotion = relationship('Promotion', uselist=False, back_populates='product')
 
     def __repr__(self):
         return f'<Product(months={self.months})>'
+
+
+class Promotion(Base):
+    __tablename__ = 'promotion'
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, ForeignKey('product.id'))
+    code = Column(String(length=20), unique=True, nullable=False)
+    product = relationship('Product', back_populates='promotion')

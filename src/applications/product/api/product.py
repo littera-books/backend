@@ -6,7 +6,7 @@ from common.database import db_session
 from common.validation import empty_validation, query_validation, length_validation
 from common.messages import EXCEPTION_MESSAGE
 
-from .model import Product
+from ..model import Product
 
 blueprint = Blueprint('Product')
 

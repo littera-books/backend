@@ -9,7 +9,7 @@ from applications.admin.api import auth as auth_admin, admin
 from applications.survey.api import question, selection, survey_result, resign_survey
 from applications.accept import api as accept_api
 from applications.message import api as message_api
-from applications.product import api as product_api
+from applications.product.api import product, promotion
 
 APP = Sanic(__name__)
 CORS(APP, resources={r'/*': {'origins': ['http://localhost:3000', 'http://localhost:3006']}})
@@ -33,9 +33,10 @@ APP.blueprint(question.blueprint)
 APP.blueprint(selection.blueprint)
 APP.blueprint(survey_result.blueprint)
 APP.blueprint(resign_survey.blueprint)
+APP.blueprint(product.blueprint)
+APP.blueprint(promotion.blueprint)
 APP.blueprint(accept_api.blueprint)
 APP.blueprint(message_api.blueprint)
-APP.blueprint(product_api.blueprint)
 
 
 @APP.listener('before_server_start')
