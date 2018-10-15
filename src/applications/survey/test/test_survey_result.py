@@ -14,12 +14,13 @@ class TestSurveyResultAPI(unittest.TestCase):
         """
         더미 질문, 선택지, 유저 생성
         """
-        APP.test_client.post(
+        request, response = APP.test_client.post(
             '/survey/question', data=json.dumps(TestQuestionValues.default)
         )
+        self.question_id = response.json.get('id')
 
         request, response = APP.test_client.post(
-            f'/survey/question/{TestQuestionValues.default["subject"]}/selection',
+            f'/survey/question/{self.question_id}/selection',
             data=json.dumps(TestSelectionValues.default)
         )
         self.dummy_selection_value = 'selection-' + str(response.json.get('id'))
@@ -37,7 +38,7 @@ class TestSurveyResultAPI(unittest.TestCase):
         더미 질문, 선택지, 유저 삭제
         """
         APP.test_client.delete(
-            f'/survey/question/{TestQuestionValues.default["subject"]}'
+            f'/survey/question/{self.question_id}'
         )
 
         APP.test_client.delete(

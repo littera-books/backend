@@ -15,17 +15,17 @@ class TestSelectionAPI(unittest.TestCase):
         """
         더미 질문 생성
         """
-        APP.test_client.post(
+        request, response = APP.test_client.post(
             '/survey/question', data=json.dumps(TestQuestionValues.default)
         )
+        self.question_id = response.json.get('id')
 
     def tearDown(self):
         """
         더미 질문 삭제
         """
         APP.test_client.delete(
-            f'/survey/question/{TestQuestionValues.default["subject"]}'
-        )
+            f'/survey/question/{self.question_id}')
 
     #     선택지 생성 테스트     #
 
@@ -34,7 +34,7 @@ class TestSelectionAPI(unittest.TestCase):
         url로 선택지 생성 테스트 성공
         """
         request, response = APP.test_client.post(
-            f'/survey/question/{TestQuestionValues.default["subject"]}/selection',
+            f'/survey/question/{self.question_id}/selection',
             data=json.dumps(TestSelectionValues.default)
         )
         self.assertEqual(response.status, 201)
@@ -47,7 +47,7 @@ class TestSelectionAPI(unittest.TestCase):
         url로 선택지 디테일 불러오기 테스트 성공
         """
         request, response = APP.test_client.post(
-            f'/survey/question/{TestQuestionValues.default["subject"]}/selection',
+            f'/survey/question/{self.question_id}/selection',
             data=json.dumps(TestSelectionValues.default)
         )
         self.assertEqual(response.status, 201)
@@ -55,7 +55,7 @@ class TestSelectionAPI(unittest.TestCase):
         selection_id = response.json.get('id')
 
         request, response = APP.test_client.get(
-            f'/survey/question/{TestQuestionValues.default["subject"]}/selection/{selection_id}'
+            f'/survey/question/{self.question_id}/selection/{selection_id}'
         )
         self.assertEqual(response.status, 200)
         self.assertEqual(response.json.get('id'), selection_id)
@@ -67,7 +67,7 @@ class TestSelectionAPI(unittest.TestCase):
         url로 선택지 삭제 테스트 성공
         """
         request, response = APP.test_client.post(
-            f'/survey/question/{TestQuestionValues.default["subject"]}/selection',
+            f'/survey/question/{self.question_id}/selection',
             data=json.dumps(TestSelectionValues.default)
         )
         self.assertEqual(response.status, 201)
@@ -75,6 +75,6 @@ class TestSelectionAPI(unittest.TestCase):
         selection_id = response.json.get('id')
 
         request, response = APP.test_client.delete(
-            f'/survey/question/{TestQuestionValues.default["subject"]}/selection/{selection_id}'
+            f'/survey/question/{self.question_id}/selection/{selection_id}'
         )
         self.assertEqual(response.status, 204)

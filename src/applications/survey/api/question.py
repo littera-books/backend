@@ -98,6 +98,7 @@ async def post(request):
     query_question = query_validation(db_session, Question, subject=data['subject'])
 
     return json({
+        'id': query_question.id,
         'subject': query_question.subject,
         'title': query_question.title
     }, status=201)
