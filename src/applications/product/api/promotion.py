@@ -6,7 +6,7 @@ from common.database import db_session
 from common.validation import empty_validation, query_validation, length_validation
 from common.messages import EXCEPTION_MESSAGE
 
-from ..model import Promotion
+from ..model import Product, Promotion
 
 blueprint = Blueprint('Promotion')
 
@@ -55,16 +55,22 @@ async def post(request):
     }, status=201)
 
 
-@blueprint.route('/promotion/<promotion_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
-async def get(request, promotion_id):
+@blueprint.route('/product/<product_id>/promotion', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, product_id):
     """
     프로모션 디테일
     """
-    query_promotion = query_validation(db_session, Promotion, id=promotion_id)
-    if query_promotion is None:
+    query_product = query_validation(db_session, Product, id=product_id)
+    if query_product is None:
         return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
 
+    if query_product.promotion is None:
+        return json({
+            'id': 0,
+            'code': ''
+        }, status=200)
+
     return json({
-        'id': query_promotion.id,
-        'code': query_promotion.code
+        'id': query_product.promotion.id,
+        'code': query_product.promotion.code
     }, status=200)
