@@ -74,3 +74,32 @@ async def get(request, product_id):
         'id': query_product.promotion.id,
         'code': query_product.promotion.code
     }, status=200)
+
+
+@blueprint.route('/product/<product_id>/promotion', methods=['PUT'], strict_slashes=True)
+async def put(request, product_id):
+    """
+    프로모션 수정
+    """
+    data = request.json
+
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+    query_product = query_validation(db_session, Product, id=product_id)
+    if query_product is None:
+        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
+
+    if query_product.promotion is None:
+        return json({
+            'id': 0,
+            'code': ''
+        }, status=200)
+
+    query_product.promotion.code = data['code']
+
+    return json({
+        'id': query_product.promotion.id,
+        'code': query_product.promotion.code,
+    }, status=200)
