@@ -12,7 +12,24 @@ blueprint = Blueprint('User')
 
 @blueprint.route('/user', methods=['OPTIONS', 'GET'], strict_slashes=True)
 async def get(request):
-    return json(None, status=200)
+    """
+    회원 리스트
+    """
+    query_user = db_session.query(User).order_by(User.created_at).all()
+
+    result = {
+        'length': len(query_user),
+        'items': []
+    }
+
+    for user in query_user:
+        item = {
+            'id': user.id,
+            'email': user.email,
+        }
+        result['items'].append(item)
+
+    return json(result, status=200)
 
 
 @blueprint.route('/user', methods=['POST'], strict_slashes=True)
