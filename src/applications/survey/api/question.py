@@ -101,13 +101,13 @@ async def post(request):
     }, status=201)
 
 
-@blueprint.route('/survey/question/<subject>', methods=['OPTIONS', 'GET'], strict_slashes=True)
-async def get(request, subject):
+@blueprint.route('/survey/question/<question_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, question_id):
     """
     질문 디테일
     """
 
-    query_question = query_validation(db_session, Question, subject=subject)
+    query_question = query_validation(db_session, Question, id=question_id)
     if query_question is None:
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
@@ -117,8 +117,8 @@ async def get(request, subject):
     }, status=200)
 
 
-@blueprint.route('/survey/question/<subject>', methods=['PUT'], strict_slashes=True)
-async def put(request, subject):
+@blueprint.route('/survey/question/<question_id>', methods=['PUT'], strict_slashes=True)
+async def put(request, question_id):
     """
     질문 수정
     """
@@ -132,11 +132,12 @@ async def put(request, subject):
     if subject_length is False:
         return json({'message': EXCEPTION_MESSAGE['invalid_subject']}, status=400)
 
-    query_question = query_validation(db_session, Question, subject=subject)
+    query_question = query_validation(db_session, Question, id=question_id)
     if query_question is None:
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
     try:
+        query_question.subject = data['subject']
         query_question.title = data['title']
         db_session.commit()
     except sqlalchemy.exc.IntegrityError as e:
@@ -153,13 +154,13 @@ async def put(request, subject):
     }, status=200)
 
 
-@blueprint.route('/survey/question/<subject>', methods=['DELETE'], strict_slashes=True)
-async def delete(request, subject):
+@blueprint.route('/survey/question/<question_id>', methods=['DELETE'], strict_slashes=True)
+async def delete(request, question_id):
     """
     질문 삭제
     """
 
-    query_question = query_validation(db_session, Question, subject=subject)
+    query_question = query_validation(db_session, Question, id=question_id)
     if query_question is None:
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
