@@ -1,3 +1,4 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
@@ -71,9 +72,13 @@ async def get(request, user_id, message_id):
     """
     메시지 디테일
     """
-    query_message = db_session.query(Message).\
-        filter_by(user_id=user_id).\
-        filter_by(id=message_id).one()
+    try:
+        query_message = db_session.query(Message).\
+            filter_by(user_id=user_id).\
+            filter_by(id=message_id).one()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
 
     return json({
         'message_id': query_message.id,
