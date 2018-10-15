@@ -4,21 +4,18 @@ from sanic.response import json
 from common.database import db_session
 from common.messages import EXCEPTION_MESSAGE
 from common.validation import query_validation
-from applications.user.model import User
 from applications.survey.model import Selection
 
 blueprint = Blueprint('Accept')
 
 
-@blueprint.route('/accept/<user_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
-async def get(request, user_id):
-    return json({
-        'user': user_id,
-    }, status=200)
+@blueprint.route('/accept', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request):
+    return json(None, status=200)
 
 
-@blueprint.route('/accept/<user_id>', methods=['POST'], strict_slashes=True)
-async def post(request, user_id):
+@blueprint.route('/accept', methods=['POST'], strict_slashes=True)
+async def post(request):
     """
     승인 / 거절 여부 판단
     """
@@ -30,10 +27,6 @@ async def post(request, user_id):
     denied_count = 0
 
     for i in value_list:
-        query_user = query_validation(db_session, User, id=user_id)
-        if query_user is None:
-            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
-
         query_selection = query_validation(db_session, Selection, id=i)
         if query_selection is None:
             return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
@@ -42,5 +35,5 @@ async def post(request, user_id):
             denied_count = denied_count + 1
 
     if denied_count > 0:
-        return json({'message': False}, status=400)
+        return json({'message': False}, status=200)
     return json({'message': True}, status=200)
