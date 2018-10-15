@@ -6,7 +6,7 @@ from common.database import db_session
 from common.validation import empty_validation, query_validation, length_validation
 from common.messages import EXCEPTION_MESSAGE
 
-from ..model import Product, Promotion
+from ..model import Promotion
 
 blueprint = Blueprint('Promotion')
 
@@ -37,15 +37,34 @@ async def post(request):
     try:
         promotion = Promotion(**data)
         db_session.add(promotion)
+        db_session.commit()
     except sqlalchemy.exc.IntegrityError as e:
         error_message = e.orig.diag.message_detail
         db_session.rollback()
-        db_session.close()
         return json({
             'message': error_message
         }, status=400)
+    finally:
+        db_session.close()
+
+    query_promotion = query_validation(db_session, Promotion, code=data['code'])
 
     return json({
-        'id': promotion.id,
-        'code': promotion.code
+        'id': query_promotion.id,
+        'code': query_promotion.code
+    }, status=201)
+
+
+@blueprint.route('/promotion/<promotion_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, promotion_id):
+    """
+    프로모션 디테일
+    """
+    query_promotion = query_validation(db_session, Promotion, id=promotion_id)
+    if query_promotion is None:
+        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
+
+    return json({
+        'id': query_promotion.id,
+        'code': query_promotion.code
     }, status=200)
