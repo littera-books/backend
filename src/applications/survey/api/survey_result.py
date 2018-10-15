@@ -3,6 +3,7 @@ from sanic.response import json
 
 from common.database import db_session
 from common.validation import query_validation
+from common.messages import EXCEPTION_MESSAGE
 from applications.user.model import User
 from ..model import Selection, SurveyResult
 
@@ -28,7 +29,12 @@ async def post(request, user_id):
 
     for i in value_list:
         query_user = query_validation(db_session, User, id=user_id)
+        if query_user is None:
+            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
         query_selection = query_validation(db_session, Selection, id=i)
+        if query_selection is None:
+            return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
         survey_result = SurveyResult()
         survey_result.user_id = query_user.id
