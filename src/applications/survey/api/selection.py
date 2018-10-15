@@ -1,3 +1,4 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
@@ -65,10 +66,13 @@ async def get(request, question_id, id):
     """
     선택지 디테일
     """
-    query_selection = db_session.query(Selection). \
-        filter(Question.id == question_id). \
-        filter_by(id=id).one()
-    if query_selection is None:
+    try:
+        query_selection = db_session.query(Selection). \
+            filter(Question.id == question_id). \
+            filter_by(id=id).one()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
     return json({
@@ -89,10 +93,13 @@ async def put(request, question_id, id):
     if is_full is False:
         return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-    query_selection = db_session.query(Selection). \
-        filter(Question.id == question_id). \
-        filter_by(id=id).one()
-    if query_selection is None:
+    try:
+        query_selection = db_session.query(Selection). \
+            filter(Question.id == question_id). \
+            filter_by(id=id).one()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
     query_selection.select = data['select']
@@ -111,10 +118,13 @@ async def delete(request, question_id, id):
     """
     선택지 삭제
     """
-    query_selection = db_session.query(Selection). \
-        filter(Question.id == question_id). \
-        filter_by(id=id).one()
-    if query_selection is None:
+    try:
+        query_selection = db_session.query(Selection). \
+            filter(Question.id == question_id). \
+            filter_by(id=id).one()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
         return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
     db_session.delete(query_selection)
