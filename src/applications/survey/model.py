@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -21,6 +21,7 @@ class Selection(Base):
     __tablename__ = 'selection'
     id = Column(Integer, primary_key=True)
     select = Column(String(length=255), unique=False, nullable=False)
+    is_accepted = Column(Boolean, unique=False, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     question_id = Column(Integer, ForeignKey('question.id'))
     question = relationship('Question', back_populates='selection')
