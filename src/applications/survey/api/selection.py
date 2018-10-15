@@ -31,6 +31,8 @@ async def get(request, question_id):
         }
         result['items'].append(item)
 
+    result['items'] = sorted(result['items'], key=lambda x: x['id'])
+
     return json(result, status=200)
 
 

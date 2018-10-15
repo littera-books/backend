@@ -60,6 +60,8 @@ async def get(request):
             }
             item['selection_items'].append(selection_item)
 
+        item['selection_items'] = sorted(item['selection_items'], key=lambda x: x['id'])
+
         result['items'].append(item)
 
     return json(result, status=200)
