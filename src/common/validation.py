@@ -38,6 +38,11 @@ def query_validation(session, model, **kwargs):
         session.close()
         return None
 
+    except sqlalchemy.orm.exc.MultipleResultsFound:
+        session.rollback()
+        session.close()
+        return None
+
     return query_instance
 
 

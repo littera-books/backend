@@ -13,6 +13,7 @@ class Product(Base):
     description = Column(String(length=100), unique=False, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     promotion = relationship('Promotion', uselist=False, back_populates='product')
+    subscription = relationship('Subscription', back_populates='product', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Product(months={self.months})>'
