@@ -32,7 +32,7 @@ class SurveyResult(Base):
     __tablename__ = 'survey_result'
     user_id = Column(Integer, ForeignKey('littera_user.id'), primary_key=True)
     selection_id = Column(Integer, ForeignKey('selection.id'), primary_key=True)
-    user = relationship('User', back_populates='selection')
+    user = relationship('User', back_populates='survey_result')
     selection = relationship('Selection', back_populates='user')
 
 

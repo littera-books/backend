@@ -12,9 +12,28 @@ blueprint = Blueprint('SurveyResult')
 
 @blueprint.route('/survey/result/<user_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
 async def get(request, user_id):
-    return json({
-        'user': user_id,
-    }, status=200)
+    """
+    설문 결과 호출
+    """
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    result = {
+        'id': user_id,
+        'length': len(query_user.survey_result),
+        'items': []
+    }
+
+    for survey_result in query_user.survey_result:
+        item = {
+            'id': survey_result.selection.id,
+            'select': survey_result.selection.select
+        }
+
+        result['items'].append(item)
+
+    return json(result, status=200)
 
 
 @blueprint.route('/survey/result/<user_id>', methods=['POST'], strict_slashes=True)

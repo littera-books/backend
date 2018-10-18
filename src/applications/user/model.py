@@ -18,7 +18,7 @@ class User(Base):
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     admin = relationship(Message, back_populates='user')
-    selection = relationship('SurveyResult', back_populates='user', cascade='all, delete-orphan')
+    survey_result = relationship('SurveyResult', back_populates='user', cascade='all, delete-orphan')
     subscription = relationship('Subscription', uselist=False, back_populates='user', cascade='all, delete-orphan')
 
     def __repr__(self):
