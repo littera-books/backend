@@ -11,7 +11,25 @@ blueprint = Blueprint('ResignSurvey')
 
 @blueprint.route('/survey/resign', methods=['OPTIONS', 'GET'], strict_slashes=True)
 async def get(request):
-    return json(None, status=200)
+    """
+    탈퇴 설문 리스트
+    """
+
+    query_resign_survey = db_session.query(ResignSurvey).order_by(ResignSurvey.created_at).all()
+
+    result = {
+        'length': len(query_resign_survey),
+        'items': []
+    }
+
+    for survey in query_resign_survey:
+        item = {
+            'id': survey.id,
+            'content': survey.content,
+        }
+        result['items'].append(item)
+
+    return json(result, status=200)
 
 
 @blueprint.route('/survey/resign', methods=['POST'], strict_slashes=True)
