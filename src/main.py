@@ -11,6 +11,7 @@ from applications.accept import api as accept_api
 from applications.message import api as message_api
 from applications.product.api import product, promotion
 from applications.subscription import api as subscription_api
+from applications.email import api as email_api
 
 APP = Sanic(__name__)
 CORS(APP, resources={r'/*': {'origins': ['http://localhost:3000', 'http://localhost:3006']}})
@@ -39,6 +40,7 @@ APP.blueprint(promotion.blueprint)
 APP.blueprint(accept_api.blueprint)
 APP.blueprint(message_api.blueprint)
 APP.blueprint(subscription_api.blueprint)
+APP.blueprint(email_api.blueprint)
 
 
 @APP.listener('before_server_start')

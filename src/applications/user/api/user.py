@@ -1,7 +1,9 @@
 import sqlalchemy
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sanic import Blueprint
 from sanic.response import json
 
+from applications.email.methods import initial_smtp_instance, send_mail
 from common.database import db_session
 from common.validation import empty_validation, query_validation, length_validation
 from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
@@ -69,6 +71,18 @@ async def post(request):
         db_session.close()
 
     query_user = query_validation(db_session, User, email=data['email'])
+
+    smtp = initial_smtp_instance()
+    scheduler = AsyncIOScheduler()
+    pick_user_id = str(query_user.id)
+    scheduler.add_job(send_mail,
+                      args=[smtp,
+                            query_user.email,
+                            pick_user_id,
+                            query_user.first_name,
+                            request.scheme,
+                            request.host])
+    scheduler.start()
 
     return json({
         'id': query_user.id,
