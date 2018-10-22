@@ -20,6 +20,9 @@ async def authenticate(request, *args, **kwargs):
     if query_user is None:
         raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['none_user'])
 
+    if not query_user.is_active:
+        raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['inactive_user'])
+
     if query_user.password != data['password']:
         raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['invalid_password'])
 

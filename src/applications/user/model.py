@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy import Column, String, Integer, DateTime, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import EmailType, PasswordType
@@ -16,6 +16,7 @@ class User(Base):
     email = Column(EmailType, unique=True, nullable=False)
     phone = Column(String(length=20), unique=True, nullable=False)
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)
+    is_active = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     admin = relationship(Message, back_populates='user')
     survey_result = relationship('SurveyResult', back_populates='user', cascade='all, delete-orphan')
