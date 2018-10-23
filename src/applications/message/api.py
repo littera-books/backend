@@ -4,36 +4,70 @@ from sanic.response import json
 
 from common.database import db_session
 from common.messages import EXCEPTION_MESSAGE
-from common.validation import empty_validation, query_validation
-from applications.user.model import User
+from common.validation import empty_validation
 from applications.admin.model import Admin
 from .model import Message
 
 blueprint = Blueprint('Message')
 
 
-@blueprint.route('/message/<user_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+@blueprint.route('/message/<user_id>/count', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request, user_id):
+    """
+    메시지 갯수
+    """
+    try:
+        query_message_count = db_session.query(Message). \
+            filter_by(user_id=user_id).count()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    return json({'count': query_message_count}, status=200)
+
+
+@blueprint.route('/message/<user_id>', methods=['OPTIONS'], strict_slashes=True)
+async def options(request, user_id):
+    return json(None, status=200)
+
+
+@blueprint.route('/message/<user_id>', methods=['GET'], strict_slashes=True)
 async def get(request, user_id):
     """
     메시지 리스트
     """
-    query_user = query_validation(db_session, User, id=user_id)
-    if query_user is None:
+    page_args = request.args.get('page', None)
+    if page_args is None:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
+    page = int(page_args[0])
+    if page is 0:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
+    try:
+        query_message = db_session.query(Message). \
+            filter_by(user_id=user_id). \
+            order_by(Message.created_at.desc()).\
+            limit(5).offset((page - 1) * 5).all()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
         return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
     result = {
-        'length': len(query_user.admin),
+        'length': len(query_message),
         'items': []
     }
 
-    for message in query_user.admin:
+    for message in query_message:
         item = {
             'id': message.id,
             'body': message.body,
             'created_at': message.created_at,
         }
 
-        result['items'].insert(0, item)
+        result['items'].append(item)
 
     return json(result, status=200)
 
@@ -73,8 +107,8 @@ async def get(request, user_id, message_id):
     메시지 디테일
     """
     try:
-        query_message = db_session.query(Message).\
-            filter_by(user_id=user_id).\
+        query_message = db_session.query(Message). \
+            filter_by(user_id=user_id). \
             filter_by(id=message_id).one()
     except sqlalchemy.exc.DataError:
         db_session.rollback()
