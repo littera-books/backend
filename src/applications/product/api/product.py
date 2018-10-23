@@ -16,7 +16,11 @@ async def get(request):
     """
     상품 리스트 보기
     """
-    query_product = db_session.query(Product).order_by(Product.created_at).all()
+    args = request.args
+    if args:
+        query_product = db_session.query(Product).order_by(Product.created_at).all()
+    else:
+        query_product = db_session.query(Product).filter_by(is_visible=True).order_by(Product.created_at).all()
 
     result = {
         'length': len(query_product),
@@ -28,7 +32,8 @@ async def get(request):
             'id': product.id,
             'months': product.months,
             'price': product.price,
-            'description': product.description
+            'description': product.description,
+            'is_visible': product.is_visible,
         }
         result['items'].append(item)
 
@@ -87,6 +92,7 @@ async def get(request, product_id):
         'months': query_product.months,
         'price': query_product.price,
         'description': query_product.description,
+        'is_visible': query_product.is_visible,
     }, status=200)
 
 
@@ -109,6 +115,7 @@ async def put(request, product_id):
         query_product.months = data['months']
         query_product.price = data['price']
         query_product.description = data['description']
+        query_product.is_visible = data['is_visible']
         db_session.commit()
     except sqlalchemy.exc.IntegrityError as e:
         error_message = e.orig.diag.message_detail

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -11,6 +11,7 @@ class Product(Base):
     months = Column(Integer, unique=True, nullable=False, default=0)
     price = Column(Integer, unique=False, nullable=False, default=0)
     description = Column(String(length=100), unique=False, nullable=True)
+    is_visible = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     promotion = relationship('Promotion', uselist=False, back_populates='product')
     subscription = relationship('Subscription', back_populates='product', cascade='all, delete-orphan')

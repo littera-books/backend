@@ -34,7 +34,7 @@ class TestProductAPI(unittest.TestCase):
         )
         self.product_id = response.json.get('id')
 
-        request, response = APP.test_client.get('/product')
+        request, response = APP.test_client.get('/product?all=true')
         self.assertEqual(response.status, 200)
 
         request, response = APP.test_client.delete(
