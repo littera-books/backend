@@ -34,7 +34,8 @@ class TestUserValues:
         'address': '서울시 행복구 희망동',
         'email': 'dummy@test.com',
         'phone': '01012345678',
-        'password': '1234'
+        'password': '1234',
+        'is_active': True,
     }
     put = {
         'last_name': 'hummy',
