@@ -43,7 +43,33 @@ def get_message(addr, user_id, first_name, host, scheme):
     return message
 
 
-async def send_mail(smtp_instance, addr, user_id, first_name, host, scheme='http'):
+def get_reset_message(addr, password):
+    TEMPORARY_DIR = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(
+        loader=FileSystemLoader(TEMPORARY_DIR),
+        trim_blocks=True
+    )
+    template = env.get_template('ResetPasswordTemplate.html')
+
+    message = MIMEMultipart('alternative')
+    message['Subject'] = '[Littera] 비밀번호 초기화 메일'
+    message['From'] = secret_json['EMAIL_HOST']
+    message['To'] = addr
+
+    url = f'http://localhost:3006/sign-in'
+
+    html = MIMEText(template.render(
+        addr=addr,
+        password=password,
+        url=url,
+    ), 'html')
+
+    message.attach(html)
+
+    return message
+
+
+async def send_activate_mail(smtp_instance, addr, user_id, first_name, host, scheme):
     await smtp_instance.connect()
     await smtp_instance.ehlo()
     await smtp_instance.starttls()
@@ -51,7 +77,17 @@ async def send_mail(smtp_instance, addr, user_id, first_name, host, scheme='http
 
     message = get_message(addr, user_id, first_name, host, scheme)
 
-    print('send mail...')
     await smtp_instance.sendmail(secret_json['EMAIL_HOST'], addr, message.as_string())
-    print('complete.')
+    await smtp_instance.quit()
+
+
+async def send_reset_password_mail(smtp_instance, addr, password):
+    await smtp_instance.connect()
+    await smtp_instance.ehlo()
+    await smtp_instance.starttls()
+    await smtp_instance.login(username=secret_json['EMAIL_HOST'], password=secret_json['EMAIL_PW'])
+
+    message = get_reset_message(addr, password)
+
+    await smtp_instance.sendmail(secret_json['EMAIL_HOST'], addr, message.as_string())
     await smtp_instance.quit()

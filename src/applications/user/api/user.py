@@ -3,10 +3,11 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sanic import Blueprint
 from sanic.response import json
 
-from applications.email.methods import initial_smtp_instance, send_mail
+from applications.email.methods import initial_smtp_instance, send_activate_mail, send_reset_password_mail
 from common.database import db_session
 from common.validation import empty_validation, query_validation, length_validation
 from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
+from common.random_seq import ran_str
 from ..model import User
 
 blueprint = Blueprint('User')
@@ -75,7 +76,7 @@ async def post(request):
     smtp = initial_smtp_instance()
     scheduler = AsyncIOScheduler()
     pick_user_id = str(query_user.id)
-    scheduler.add_job(send_mail,
+    scheduler.add_job(send_activate_mail,
                       args=[smtp,
                             query_user.email,
                             pick_user_id,
@@ -217,3 +218,39 @@ async def delete(request, user_id):
     db_session.close()
 
     return json(None, status=204)
+
+
+@blueprint.route('/user/reset-password', methods=['OPTIONS'], strict_slashes=True)
+async def options(request):
+    return json(None, status=200)
+
+
+@blueprint.route('/user/reset-password', methods=['POST'], strict_slashes=True)
+async def post(request):
+    data = request.json
+
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+    query_user = query_validation(db_session, User, email=data['email'])
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    query_user.password = ran_str
+
+    db_session.commit()
+    db_session.close()
+
+    smtp = initial_smtp_instance()
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        send_reset_password_mail,
+        args=[smtp,
+              data['email'],
+              ran_str,
+              ]
+    )
+    scheduler.start()
+
+    return json(None, status=200)
