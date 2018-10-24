@@ -20,7 +20,12 @@ async def get(request):
     return json({'count': query_survey_count}, status=200)
 
 
-@blueprint.route('/survey/resign', methods=['OPTIONS', 'GET'], strict_slashes=True)
+@blueprint.route('/survey/resign', methods=['OPTIONS'], strict_slashes=True)
+async def options(request):
+    return json(None, status=200)
+
+
+@blueprint.route('/survey/resign', methods=['GET'], strict_slashes=True)
 async def get(request):
     """
     탈퇴 설문 리스트
@@ -35,7 +40,7 @@ async def get(request):
 
     try:
         query_resign_survey = db_session.query(ResignSurvey). \
-            order_by(ResignSurvey.created_at). \
+            order_by(ResignSurvey.created_at.desc()). \
             limit(5).offset((page - 1) * 5).all()
     except sqlalchemy.exc.DataError:
         db_session.rollback()
@@ -51,6 +56,7 @@ async def get(request):
         item = {
             'id': survey.id,
             'content': survey.content,
+            'created_at': survey.created_at,
         }
         result['items'].append(item)
 
@@ -99,7 +105,8 @@ async def get(request, survey_id):
 
     return json({
         'id': query_resign_survey.id,
-        'content': query_resign_survey.content
+        'content': query_resign_survey.content,
+        'created_at': query_resign_survey.created_at,
     }, status=200)
 
 
