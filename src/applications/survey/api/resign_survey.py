@@ -1,3 +1,4 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
@@ -9,13 +10,37 @@ from ..model import ResignSurvey
 blueprint = Blueprint('ResignSurvey')
 
 
+@blueprint.route('/survey/resign/count', methods=['OPTIONS', 'GET'], strict_slashes=True)
+async def get(request):
+    """
+    탈퇴 설문 갯수
+    """
+    query_survey_count = db_session.query(ResignSurvey).count()
+
+    return json({'count': query_survey_count}, status=200)
+
+
 @blueprint.route('/survey/resign', methods=['OPTIONS', 'GET'], strict_slashes=True)
 async def get(request):
     """
     탈퇴 설문 리스트
     """
+    page_args = request.args.get('page', None)
+    if page_args is None:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
 
-    query_resign_survey = db_session.query(ResignSurvey).order_by(ResignSurvey.created_at).all()
+    page = int(page_args[0])
+    if page is 0:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
+    try:
+        query_resign_survey = db_session.query(ResignSurvey). \
+            order_by(ResignSurvey.created_at). \
+            limit(5).offset((page - 1) * 5).all()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
+        return json({'message': EXCEPTION_MESSAGE['none_survey']}, status=400)
 
     result = {
         'length': len(query_resign_survey),
