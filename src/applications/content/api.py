@@ -8,6 +8,7 @@ from common.database import db_session
 from common.messages import EXCEPTION_MESSAGE
 from common.read_secrets import ROOT_DIR
 from common.random_seq import make_rand_seq
+from common.validation import query_validation
 
 from .model import Image
 
@@ -62,3 +63,24 @@ async def post(request):
         'name': name,
         'file': hashed_filename,
     }, status=201)
+
+
+@blueprint.route('/image/<name>', methods=['OPTIONS'], strict_slashes=True)
+async def options(request, name):
+    return json({'name': name}, status=200)
+
+
+@blueprint.route('/image/<name>', methods=['GET'], strict_slashes=True)
+async def get(request, name):
+    """
+    이미지 디테일
+    """
+    query_image = query_validation(db_session, Image, name=name)
+    if query_image is None:
+        return json({'message': EXCEPTION_MESSAGE['none_image']}, status=400)
+
+    return json({
+        'id': query_image.id,
+        'name': query_image.name,
+        'url': query_image.image_url,
+    }, status=200)
