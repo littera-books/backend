@@ -7,7 +7,7 @@ from applications.email.methods import initial_smtp_instance, send_activate_mail
 from common.database import db_session
 from common.validation import empty_validation, query_validation, length_validation
 from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
-from common.random_seq import ran_str
+from common.random_seq import make_rand_seq
 from ..model import User
 
 blueprint = Blueprint('User')
@@ -237,7 +237,9 @@ async def post(request):
     if query_user is None:
         return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
-    query_user.password = ran_str
+    new_password = make_rand_seq()
+
+    query_user.password = new_password
 
     db_session.commit()
     db_session.close()
@@ -248,7 +250,7 @@ async def post(request):
         send_reset_password_mail,
         args=[smtp,
               data['email'],
-              ran_str,
+              new_password,
               ]
     )
     scheduler.start()
