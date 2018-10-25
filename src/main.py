@@ -1,9 +1,12 @@
+import os
+
 from sanic import Sanic
 from sanic.response import text
 from sanic_cors import CORS
 from sanic_jwt import Initialize
 
 from common.database import Base, engine
+from common.read_secrets import ROOT_DIR
 from applications.user.api import auth as auth_user, user
 from applications.admin.api import auth as auth_admin, admin
 from applications.survey.api import question, selection, survey_result, resign_survey
@@ -14,8 +17,10 @@ from applications.subscription import api as subscription_api
 from applications.email import api as email_api
 from applications.content import api as image_api
 
+STATIC_DIR = os.path.join(ROOT_DIR, 'static')
+
 APP = Sanic(__name__)
-APP.static('/static', '../static')
+APP.static('/static', STATIC_DIR)
 CORS(APP, resources={r'/*': {'origins': ['http://localhost:3000', 'http://localhost:3006']}})
 
 Initialize(instance=user.blueprint,
