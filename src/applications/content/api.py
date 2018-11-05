@@ -22,6 +22,30 @@ async def options(request):
     return json(None, status=200)
 
 
+@blueprint.route('/image', methods=['GET'], strict_slashes=True)
+async def get(request):
+    """
+    이미지 리스트
+    """
+    query_image = db_session.query(Image).order_by(Image.created_at).all()
+
+    result = {
+        'length': len(query_image),
+        'items': [],
+    }
+
+    for image in query_image:
+        item = {
+            'id': image.id,
+            'name': image.name,
+            'url': image.image_url,
+        }
+
+        result['items'].append(item)
+
+    return json(result, status=200)
+
+
 @blueprint.route('/image', methods=['POST'], strict_slashes=True)
 async def post(request):
     """
