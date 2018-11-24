@@ -2,6 +2,7 @@
 .secrets.json
 .secrets.tar
 static/*
+pgdata/*
 
 # Created by https://www.gitignore.io/api/macos,python,visualstudiocode
 
