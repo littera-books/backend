@@ -32,4 +32,4 @@ async def get(request):
     finally:
         db_session.close()
 
-    return response.redirect('http://localhost:3006/sign-in')
+    return response.redirect('https://www.littera.co.kr/sign-in')
