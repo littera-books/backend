@@ -18,7 +18,7 @@ def initial_smtp_instance():
     )
 
 
-def get_message(addr, user_id, first_name, host, scheme):
+def get_message(addr, user_id, host, scheme):
     TEMPORARY_DIR = os.path.dirname(os.path.abspath(__file__))
     env = Environment(
         loader=FileSystemLoader(TEMPORARY_DIR),
@@ -34,7 +34,7 @@ def get_message(addr, user_id, first_name, host, scheme):
     url = f'{host}://{scheme}/activate?email={addr}&pk={user_id}'
 
     html = MIMEText(template.render(
-        first_name=first_name,
+        addr=addr,
         url=url,
     ), 'html')
 
@@ -69,13 +69,13 @@ def get_reset_message(addr, password):
     return message
 
 
-async def send_activate_mail(smtp_instance, addr, user_id, first_name, host, scheme):
+async def send_activate_mail(smtp_instance, addr, user_id, host, scheme):
     await smtp_instance.connect()
     await smtp_instance.ehlo()
     await smtp_instance.starttls()
     await smtp_instance.login(username=secret_json['EMAIL_HOST'], password=secret_json['EMAIL_PW'])
 
-    message = get_message(addr, user_id, first_name, host, scheme)
+    message = get_message(addr, user_id, host, scheme)
 
     await smtp_instance.sendmail(secret_json['EMAIL_HOST'], addr, message.as_string())
     await smtp_instance.quit()

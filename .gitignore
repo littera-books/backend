@@ -3,6 +3,7 @@
 .secrets.tar
 static/*
 pgdata/*
+alembic.ini
 
 # Created by https://www.gitignore.io/api/macos,python,visualstudiocode
 

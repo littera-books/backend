@@ -46,18 +46,6 @@ async def post(request):
     if is_full is False:
         return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
 
-    first_name_length = length_validation(data['first_name'], 20)
-    if first_name_length is False:
-        return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
-
-    last_name_length = length_validation(data['last_name'], 20)
-    if last_name_length is False:
-        return json({'message': EXCEPTION_MESSAGE['invalid_username']}, status=400)
-
-    phone_length = length_validation(data['phone'], 20)
-    if phone_length is False:
-        return json({'message': EXCEPTION_MESSAGE['invalid_phone']}, status=400)
-
     try:
         user = User(**data)
         db_session.add(user)
@@ -80,7 +68,6 @@ async def post(request):
                       args=[smtp,
                             query_user.email,
                             pick_user_id,
-                            query_user.first_name,
                             request.scheme,
                             request.host])
     scheduler.start()
