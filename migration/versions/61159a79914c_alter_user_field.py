@@ -17,20 +17,14 @@ depends_on = None
 
 
 def upgrade():
-    op.alter_column(
-        'littera_user',
-        sa.Column('first_name', sa.String(20), unique=False, nullable=True),
-        sa.Column('last_name', sa.String(20), unique=False, nullable=True),
-        sa.Column('address', sa.String, unique=False, nullable=True),
-        sa.Column('phone', sa.String(20), unique=True, nullable=True),
-    )
+    op.alter_column('littera_user', 'first_name', nullable=True),
+    op.alter_column('littera_user', 'last_name', nullable=True),
+    op.alter_column('littera_user', 'address', nullable=True),
+    op.alter_column('littera_user', 'phone', nullable=True),
 
 
 def downgrade():
-    op.alter_column(
-        'littera_user',
-        sa.Column('first_name', sa.String(20), unique=False, nullable=False),
-        sa.Column('last_name', sa.String(20), unique=False, nullable=False),
-        sa.Column('address', sa.String, unique=False, nullable=False),
-        sa.Column('phone', sa.String(20), unique=True, nullable=False),
-    )
+    op.alter_column('littera_user', 'first_name', nullable=False),
+    op.alter_column('littera_user', 'last_name', nullable=False),
+    op.alter_column('littera_user', 'address', nullable=False),
+    op.alter_column('littera_user', 'phone', nullable=False),
