@@ -10,11 +10,11 @@ from applications.message.model import Message
 class User(Base):
     __tablename__ = 'littera_user'
     id = Column(Integer, primary_key=True)
-    first_name = Column(String(length=20), unique=False, nullable=False)
-    last_name = Column(String(length=20), unique=False, nullable=False)
-    address = Column(String, unique=False, nullable=False)
+    first_name = Column(String(length=20), unique=False, nullable=True)
+    last_name = Column(String(length=20), unique=False, nullable=True)
+    address = Column(String, unique=False, nullable=True)
     email = Column(EmailType, unique=True, nullable=False)
-    phone = Column(String(length=20), unique=True, nullable=False)
+    phone = Column(String(length=20), unique=True, nullable=True)
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)
     is_active = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
