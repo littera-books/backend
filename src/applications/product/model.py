@@ -9,6 +9,7 @@ class Product(Base):
     __tablename__ = 'product'
     id = Column(Integer, primary_key=True)
     months = Column(Integer, unique=True, nullable=False, default=0)
+    books = Column(Integer, unique=False, nullable=False, default=0)
     price = Column(Integer, unique=False, nullable=False, default=0)
     description = Column(String(length=100), unique=False, nullable=True)
     is_visible = Column(Boolean, default=False)

@@ -30,6 +30,7 @@ async def get(request):
     for product in query_product:
         item = {
             'id': product.id,
+            'books': product.books,
             'months': product.months,
             'price': product.price,
             'description': product.description,
@@ -72,6 +73,7 @@ async def post(request):
 
     return json({
         'id': query_product.id,
+        'books': query_product.books,
         'months': query_product.months,
         'price': query_product.price,
         'description': query_product.description
@@ -89,6 +91,7 @@ async def get(request, product_id):
 
     return json({
         'id': query_product.id,
+        'books': query_product.books,
         'months': query_product.months,
         'price': query_product.price,
         'description': query_product.description,
@@ -113,6 +116,7 @@ async def put(request, product_id):
 
     try:
         query_product.months = data['months']
+        query_product.books = data['books']
         query_product.price = data['price']
         query_product.description = data['description']
         query_product.is_visible = data['is_visible']
@@ -127,6 +131,7 @@ async def put(request, product_id):
 
     return json({
         'id': query_product.id,
+        'books': query_product.books,
         'months': query_product.months,
         'price': query_product.price,
         'description': query_product.description,
