@@ -1,14 +1,20 @@
+import os
+
 import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
 from common.database import db_session
+from common.random_seq import make_rand_seq
+from common.read_secrets import ROOT_DIR
 from common.validation import empty_validation, query_validation, length_validation
 from common.messages import EXCEPTION_MESSAGE
 
 from ..model import Product
 
 blueprint = Blueprint('Product')
+
+STATIC_DIR = os.path.join(ROOT_DIR, 'static')
 
 
 @blueprint.route('/product', methods=['OPTIONS', 'GET'], strict_slashes=True)
@@ -34,6 +40,7 @@ async def get(request):
             'months': product.months,
             'price': product.price,
             'description': product.description,
+            'url': product.thumbnail_url,
             'is_visible': product.is_visible,
         }
         result['items'].append(item)
@@ -46,7 +53,30 @@ async def post(request):
     """
     상품 생성
     """
-    data = request.json
+    books = request.form.get('books', None)
+    months = request.form.get('months', None)
+    price = request.form.get('price', None)
+    description = request.form.get('description', None)
+    raw_thumbnail = request.files.get('thumbnail', None)
+
+    if not os.path.exists(STATIC_DIR):
+        os.mkdir(STATIC_DIR, 0o0777)
+
+    file, ext = os.path.splitext(raw_thumbnail.name)
+
+    hashed_code = make_rand_seq()
+    hashed_filename = file + '_' + hashed_code + ext
+
+    with open(STATIC_DIR + '/' + hashed_filename, 'wb') as f:
+        f.write(raw_thumbnail.body)
+
+    data = {
+        'books': books,
+        'months': months,
+        'price': price,
+        'description': description,
+        'thumbnail_url': '/static/' + hashed_filename,
+    }
 
     is_full = empty_validation(data)
     if is_full is False:
@@ -76,7 +106,8 @@ async def post(request):
         'books': query_product.books,
         'months': query_product.months,
         'price': query_product.price,
-        'description': query_product.description
+        'description': query_product.description,
+        'url': query_product.thumbnail_url,
     }, status=201)
 
 
@@ -96,6 +127,7 @@ async def get(request, product_id):
         'price': query_product.price,
         'description': query_product.description,
         'is_visible': query_product.is_visible,
+        'url': query_product.thumbnail_url,
     }, status=200)
 
 
