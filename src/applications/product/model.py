@@ -12,6 +12,7 @@ class Product(Base):
     books = Column(Integer, unique=False, nullable=False, default=0)
     price = Column(Integer, unique=False, nullable=False, default=0)
     description = Column(String(length=100), unique=False, nullable=True)
+    thumbnail_url = Column(String, unique=False, nullable=True)
     is_visible = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     promotion = relationship('Promotion', uselist=False, back_populates='product')
