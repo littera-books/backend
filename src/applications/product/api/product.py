@@ -59,24 +59,26 @@ async def post(request):
     description = request.form.get('description', None)
     raw_thumbnail = request.files.get('thumbnail', None)
 
-    if not os.path.exists(STATIC_DIR):
-        os.mkdir(STATIC_DIR, 0o0777)
-
-    file, ext = os.path.splitext(raw_thumbnail.name)
-
-    hashed_code = make_rand_seq()
-    hashed_filename = file + '_' + hashed_code + ext
-
-    with open(STATIC_DIR + '/' + hashed_filename, 'wb') as f:
-        f.write(raw_thumbnail.body)
-
     data = {
         'books': books,
         'months': months,
         'price': price,
         'description': description,
-        'thumbnail_url': '/static/' + hashed_filename,
     }
+
+    if raw_thumbnail is not None:
+        if not os.path.exists(STATIC_DIR):
+            os.mkdir(STATIC_DIR, 0o0777)
+
+        file, ext = os.path.splitext(raw_thumbnail.name)
+
+        hashed_code = make_rand_seq()
+        hashed_filename = file + '_' + hashed_code + ext
+
+        with open(STATIC_DIR + '/' + hashed_filename, 'wb') as f:
+            f.write(raw_thumbnail.body)
+
+        data['thumbnail_url'] = '/static/' + hashed_filename
 
     is_full = empty_validation(data)
     if is_full is False:
@@ -136,7 +138,37 @@ async def put(request, product_id):
     """
     상품 수정
     """
-    data = request.json
+    books = request.form.get('books', None)
+    months = request.form.get('months', None)
+    price = request.form.get('price', None)
+    description = request.form.get('description', None)
+    is_visible = request.form.get('is_visible', None)
+    raw_thumbnail = request.files.get('thumbnail', None)
+
+    def determine_bool(value):
+        return value in 'true'
+
+    data = {
+        'books': books,
+        'months': months,
+        'price': price,
+        'description': description,
+        'is_visible': determine_bool(is_visible)
+    }
+
+    if raw_thumbnail is not None:
+        if not os.path.exists(STATIC_DIR):
+            os.mkdir(STATIC_DIR, 0o0777)
+
+        file, ext = os.path.splitext(raw_thumbnail.name)
+
+        hashed_code = make_rand_seq()
+        hashed_filename = file + '_' + hashed_code + ext
+
+        with open(STATIC_DIR + '/' + hashed_filename, 'wb') as f:
+            f.write(raw_thumbnail.body)
+
+        data['thumbnail_url'] = '/static/' + hashed_filename
 
     is_full = empty_validation(data)
     if is_full is False:
@@ -152,6 +184,8 @@ async def put(request, product_id):
         query_product.price = data['price']
         query_product.description = data['description']
         query_product.is_visible = data['is_visible']
+        if raw_thumbnail is not None:
+            query_product.thumbnail_url = data['thumbnail_url']
         db_session.commit()
     except sqlalchemy.exc.IntegrityError as e:
         error_message = e.orig.diag.message_detail
