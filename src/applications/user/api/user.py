@@ -140,8 +140,9 @@ async def put(request, user_id):
         query_user.first_name = data['first_name']
         query_user.last_name = data['last_name']
         query_user.address = data['address']
-        query_user.email = data['email']
         query_user.phone = data['phone']
+        if data.get('email'):
+            query_user.email = data['email']
         db_session.commit()
     except sqlalchemy.exc.IntegrityError as e:
         error_message = e.orig.diag.message_detail
