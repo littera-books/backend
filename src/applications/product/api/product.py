@@ -39,6 +39,7 @@ async def get(request):
             'books': product.books,
             'months': product.months,
             'price': product.price,
+            'discount_amount': product.discount_amount,
             'description': product.description,
             'url': product.thumbnail_url,
             'is_visible': product.is_visible,
@@ -56,6 +57,7 @@ async def post(request):
     books = request.form.get('books', None)
     months = request.form.get('months', None)
     price = request.form.get('price', None)
+    discount_amount = request.form.get('discount_amount', None)
     description = request.form.get('description', None)
     raw_thumbnail = request.files.get('thumbnail', None)
 
@@ -63,6 +65,7 @@ async def post(request):
         'books': books,
         'months': months,
         'price': price,
+        'discount_amount': discount_amount,
         'description': description,
     }
 
@@ -127,6 +130,7 @@ async def get(request, product_id):
         'books': query_product.books,
         'months': query_product.months,
         'price': query_product.price,
+        'discount_amount': query_product.discount_amount,
         'description': query_product.description,
         'is_visible': query_product.is_visible,
         'url': query_product.thumbnail_url,
@@ -141,6 +145,7 @@ async def put(request, product_id):
     books = request.form.get('books', None)
     months = request.form.get('months', None)
     price = request.form.get('price', None)
+    discount_amount = request.form.get('discount_amount', None)
     description = request.form.get('description', None)
     is_visible = request.form.get('is_visible', None)
     raw_thumbnail = request.files.get('thumbnail', None)
@@ -152,6 +157,7 @@ async def put(request, product_id):
         'books': books,
         'months': months,
         'price': price,
+        'discount_amount': discount_amount,
         'description': description,
         'is_visible': determine_bool(is_visible)
     }
@@ -182,6 +188,7 @@ async def put(request, product_id):
         query_product.months = data['months']
         query_product.books = data['books']
         query_product.price = data['price']
+        query_product.discount_amount = data['discount_amount']
         query_product.description = data['description']
         query_product.is_visible = data['is_visible']
         if raw_thumbnail is not None:
@@ -200,6 +207,7 @@ async def put(request, product_id):
         'books': query_product.books,
         'months': query_product.months,
         'price': query_product.price,
+        'discount_amount': query_product.discount_amount,
         'description': query_product.description,
     }, status=200)
 
