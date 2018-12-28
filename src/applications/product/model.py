@@ -11,6 +11,7 @@ class Product(Base):
     months = Column(Integer, unique=True, nullable=False, default=0)
     books = Column(Integer, unique=False, nullable=False, default=0)
     price = Column(Integer, unique=False, nullable=False, default=0)
+    discount_amount = Column(Integer, unique=False, nullable=False, default=0)
     description = Column(String(length=100), unique=False, nullable=True)
     thumbnail_url = Column(String, unique=False, nullable=True)
     is_visible = Column(Boolean, default=False)
