@@ -21,7 +21,11 @@ STATIC_DIR = os.path.join(ROOT_DIR, 'static')
 
 APP = Sanic(__name__)
 APP.static('/static', STATIC_DIR)
-CORS(APP, resources={r'/*': {'origins': ['https://admin.littera.co.kr', 'https://www.littera.co.kr']}})
+CORS(APP, resources={r'/*': {'origins': ['https://admin.littera.co.kr',
+                                         'https://www.littera.co.kr',
+                                         'http://localhost:3000',
+                                         'http://localhost:3006',
+                                         ]}})
 
 Initialize(instance=user.blueprint,
            app=APP,
