@@ -16,6 +16,7 @@ from applications.product.api import product, promotion
 from applications.subscription import api as subscription_api
 from applications.email import api as email_api
 from applications.content import api as image_api
+from applications.book import api as book_api
 
 STATIC_DIR = os.path.join(ROOT_DIR, 'static')
 
@@ -53,6 +54,7 @@ APP.blueprint(message_api.blueprint)
 APP.blueprint(subscription_api.blueprint)
 APP.blueprint(email_api.blueprint)
 APP.blueprint(image_api.blueprint)
+APP.blueprint(book_api.blueprint)
 
 
 @APP.listener('before_server_start')
