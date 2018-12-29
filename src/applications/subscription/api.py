@@ -7,10 +7,54 @@ from common.validation import empty_validation, query_validation
 from common.messages import EXCEPTION_MESSAGE
 
 from applications.user.model import User
-from applications.product.model import Promotion
+from applications.product.model import Promotion, Product
 from .model import Subscription
 
 blueprint = Blueprint('Subscription')
+
+
+@blueprint.route('/subscription/<user_id>', methods=['OPTIONS'], strict_slashes=True)
+async def options(request, user_id):
+    return json(None, status=200)
+
+
+@blueprint.route('/subscription/<user_id>', methods=['GET'], strict_slashes=True)
+async def get(request, user_id):
+    """
+    구독 리스트
+    """
+    query_subscription = db_session.query(Subscription).filter_by(user_id=user_id).order_by(
+        Subscription.created_at).all()
+
+    result = {
+        'length': len(query_subscription),
+        'items': [],
+    }
+
+    for subscription in query_subscription:
+        item = {
+            'first_name': subscription.first_name,
+            'last_name': subscription.last_name,
+            'address': subscription.address,
+            'extra_address': subscription.extra_address,
+            'phone': subscription.phone,
+            'created_at': subscription.created_at,
+        }
+
+        product = query_validation(db_session, Product, id=subscription.product_id)
+        if product is None:
+            item['product'] = {}
+        item['product'] = {
+            'id': product.id,
+            'books': product.books,
+            'months': product.months,
+            'price': product.price,
+            'discount_amount': product.discount_amount,
+        }
+
+        result['items'].append(item)
+
+    return json(result, status=200)
 
 
 @blueprint.route('/subscription', methods=['OPTIONS'], strict_slashes=True)
@@ -33,9 +77,6 @@ async def post(request):
     if query_user is None:
         return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
-    if query_user.subscription:
-        return json({'message': EXCEPTION_MESSAGE['already_exist']}, status=400)
-
     try:
         subscription = Subscription(**data)
         db_session.add(subscription)
@@ -49,13 +90,9 @@ async def post(request):
     finally:
         db_session.close()
 
-    query_subscription = query_validation(db_session, Subscription, user_id=data['user_id'])
-    if query_subscription is None:
-        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
-
     return json({
-        'user_id': query_subscription.user_id,
-        'product_id': query_subscription.product.id
+        'user_id': subscription.user_id,
+        'product_id': subscription.product.id
     }, status=201)
 
 
@@ -101,11 +138,7 @@ async def post(request):
     finally:
         db_session.close()
 
-    query_subscription = query_validation(db_session, Subscription, user_id=data['user_id'])
-    if query_subscription is None:
-        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
-
     return json({
-        'user_id': query_subscription.user_id,
-        'product_id': query_subscription.product.id
+        'user_id': subscription.user_id,
+        'product_id': subscription.product.id
     }, status=201)
