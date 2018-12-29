@@ -13,6 +13,7 @@ class User(Base):
     first_name = Column(String(length=20), unique=False, nullable=True)
     last_name = Column(String(length=20), unique=False, nullable=True)
     address = Column(String, unique=False, nullable=True)
+    extra_address = Column(String, unique=False, nullable=True)
     email = Column(EmailType, unique=True, nullable=False)
     phone = Column(String(length=20), unique=True, nullable=True)
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)

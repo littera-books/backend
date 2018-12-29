@@ -87,25 +87,14 @@ async def get(request, user_id):
     if query_user is None:
         return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
-    if query_user.subscription is None:
-        return json({
-            'id': query_user.id,
-            'first_name': query_user.first_name,
-            'last_name': query_user.last_name,
-            'address': query_user.address,
-            'phone': query_user.phone,
-            'email': query_user.email,
-            'subscription': ''
-        }, status=200)
-
     return json({
         'id': query_user.id,
         'first_name': query_user.first_name,
         'last_name': query_user.last_name,
         'address': query_user.address,
+        'extra_address': query_user.extra_address,
         'phone': query_user.phone,
         'email': query_user.email,
-        'subscription': query_user.subscription.product.description
     }, status=200)
 
 
@@ -140,6 +129,7 @@ async def put(request, user_id):
         query_user.first_name = data['first_name']
         query_user.last_name = data['last_name']
         query_user.address = data['address']
+        query_user.extra_address = data['extra_address']
         query_user.phone = data['phone']
         if data.get('email'):
             query_user.email = data['email']

@@ -12,6 +12,7 @@ class Subscription(Base):
     first_name = Column(String(length=20), unique=False, nullable=True)
     last_name = Column(String(length=20), unique=False, nullable=True)
     address = Column(String, unique=False, nullable=True)
+    extra_address = Column(String, unique=False, nullable=True)
     phone = Column(String(length=20), unique=False, nullable=True)
     created_at = Column(DateTime(timezone=True), primary_key=True, server_default=func.now())
     product = relationship('Product', back_populates='subscription')
