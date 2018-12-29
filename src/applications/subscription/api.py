@@ -33,6 +33,7 @@ async def get(request, user_id):
 
     for subscription in query_subscription:
         item = {
+            'id': subscription.id,
             'first_name': subscription.first_name,
             'last_name': subscription.last_name,
             'address': subscription.address,
@@ -53,6 +54,44 @@ async def get(request, user_id):
         }
 
         result['items'].append(item)
+
+    return json(result, status=200)
+
+
+@blueprint.route('/subscription/<user_id>/<subscription_id>', methods=['OPTIONS'], strict_slashes=True)
+async def options(request, user_id, subscription_id):
+    return json(None, status=200)
+
+
+@blueprint.route('/subscription/<user_id>/<subscription_id>', methods=['GET'], strict_slashes=True)
+async def get(request, user_id, subscription_id):
+    """
+    구독 디테일
+    """
+    query_subscription = query_validation(db_session, Subscription, id=subscription_id)
+    if query_subscription is None:
+        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
+
+    result = {
+        'id': query_subscription.id,
+        'first_name': query_subscription.first_name,
+        'last_name': query_subscription.last_name,
+        'address': query_subscription.address,
+        'extra_address': query_subscription.extra_address,
+        'phone': query_subscription.phone,
+        'created_at': query_subscription.created_at,
+    }
+
+    product = query_validation(db_session, Product, id=query_subscription.product_id)
+    if product is None:
+        result['product'] = {}
+    result['product'] = {
+        'id': product.id,
+        'books': product.books,
+        'months': product.months,
+        'price': product.price,
+        'discount_amount': product.discount_amount,
+    }
 
     return json(result, status=200)
 
