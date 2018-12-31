@@ -84,6 +84,7 @@ def get_question_message(addr, name, content):
 
     html = MIMEText(template.render(
         content=content,
+        addr=addr,
     ), 'html')
 
     message.attach(html)
