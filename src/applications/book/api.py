@@ -1,3 +1,5 @@
+import sqlalchemy
+
 from sanic import Blueprint
 from sanic.response import json
 
@@ -47,9 +49,26 @@ async def get(request, subscription_id):
     """
     도서 리스트
     """
+    page_args = request.args.get('page', None)
+    if page_args is None:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
+    page = int(page_args[0])
+    if page is 0:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
     query_subscription = query_validation(db_session, Subscription, id=subscription_id)
     if query_subscription is None:
         return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
+
+    try:
+        query_book = db_session.query(Book).filter_by(subscription_id=subscription_id). \
+            order_by(Book.order.desc()). \
+            limit(6).offset((page - 1) * 6).all()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
 
     result = {
         'length': len(query_subscription.book),
@@ -57,7 +76,7 @@ async def get(request, subscription_id):
         'items': [],
     }
 
-    for book in query_subscription.book:
+    for book in query_book:
         item = {
             'id': book.id,
             'order': book.order,
@@ -66,8 +85,6 @@ async def get(request, subscription_id):
         }
 
         result['items'].append(item)
-
-    result['items'] = sorted(result['items'], key=lambda x: x['id'])
 
     return json(result, status=200)
 
