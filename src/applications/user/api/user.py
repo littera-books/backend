@@ -95,6 +95,7 @@ async def get(request, user_id):
         'extra_address': query_user.extra_address,
         'phone': query_user.phone,
         'email': query_user.email,
+        'has_survey': True if len(query_user.survey_result) > 0 else False,
     }, status=200)
 
 
