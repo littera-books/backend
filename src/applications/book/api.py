@@ -7,10 +7,61 @@ from common.database import db_session
 from common.validation import empty_validation, query_validation
 from common.messages import EXCEPTION_MESSAGE
 
+from applications.user.model import User
 from applications.subscription.model import Subscription
 from .model import Book
 
 blueprint = Blueprint('Book')
+
+
+@blueprint.route('/book/user/<user_id>', methods=['OPTIONS'], strict_slashes=True)
+async def options(request, user_id):
+    return json(None, status=200)
+
+
+@blueprint.route('/book/user/<user_id>', methods=['GET'], strict_slashes=True)
+async def get(request, user_id):
+    """
+    해당 유저의 전체 도서 배송 정보 리스트
+    """
+    page_args = request.args.get('page', None)
+    if page_args is None:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
+    page = int(page_args[0])
+    if page is 0:
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    try:
+        query_book_all = db_session.query(Book).join(Subscription).join(User).filter(User.id == user_id)
+        query_book = query_book_all.order_by(Book.created_at.desc()). \
+            limit(6).offset((page - 1) * 6).all()
+    except sqlalchemy.exc.DataError:
+        db_session.rollback()
+        db_session.close()
+        return json({'message': EXCEPTION_MESSAGE['invalid_page']}, status=400)
+
+    result = {
+        'length': len(query_book_all.all()),
+        'items': [],
+    }
+
+    for book in query_book:
+        item = {
+            'id': book.id,
+            'order': book.order,
+            'name': book.name,
+            'created_at': book.created_at,
+            'months': book.subscription.product.months,
+        }
+
+        result['items'].append(item)
+
+    return json(result, status=200)
 
 
 @blueprint.route('/book/<subscription_id>', methods=['OPTIONS'], strict_slashes=True)
