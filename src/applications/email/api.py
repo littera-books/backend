@@ -61,5 +61,6 @@ async def post(request):
             data['name'],
             data['content'],
         ])
+    scheduler.start()
 
     return json(None, status=200)
