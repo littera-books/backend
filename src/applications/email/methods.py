@@ -69,6 +69,28 @@ def get_reset_message(addr, password):
     return message
 
 
+def get_question_message(addr, name, content):
+    TEMPORARY_DIR = os.path.dirname(os.path.abspath(__file__))
+    env = Environment(
+        loader=FileSystemLoader(TEMPORARY_DIR),
+        trim_blocks=True
+    )
+    template = env.get_template('QuestionTemplate.html')
+
+    message = MIMEMultipart('alternative')
+    message['Subject'] = f'[Littera] {name} 님의 질문'
+    message['From'] = addr
+    message['To'] = secret_json['EMAIL_HOST']
+
+    html = MIMEText(template.render(
+        content=content,
+    ), 'html')
+
+    message.attach(html)
+
+    return message
+
+
 async def send_activate_mail(smtp_instance, addr, user_id, host, scheme):
     await smtp_instance.connect()
     await smtp_instance.ehlo()
@@ -90,4 +112,16 @@ async def send_reset_password_mail(smtp_instance, addr, password):
     message = get_reset_message(addr, password)
 
     await smtp_instance.sendmail(secret_json['EMAIL_HOST'], addr, message.as_string())
+    await smtp_instance.quit()
+
+
+async def send_question_mail(smtp_instance, addr, name, content):
+    await smtp_instance.connect()
+    await smtp_instance.ehlo()
+    await smtp_instance.starttls()
+    await smtp_instance.login(username=secret_json['EMAIL_HOST'], password=secret_json['EMAIL_PW'])
+
+    message = get_question_message(addr, name, content)
+
+    await smtp_instance.sendmail(addr, secret_json['EMAIL_HOST'], message.as_string())
     await smtp_instance.quit()

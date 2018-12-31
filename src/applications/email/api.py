@@ -1,10 +1,13 @@
 import sqlalchemy
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sanic import Blueprint, response
 from sanic.response import json
 
+from applications.email.methods import initial_smtp_instance, send_question_mail
 from applications.user.model import User
 from common.database import db_session
 from common.messages import EXCEPTION_MESSAGE
+from common.validation import empty_validation
 
 blueprint = Blueprint('Email')
 
@@ -33,3 +36,30 @@ async def get(request):
         db_session.close()
 
     return response.redirect('https://www.littera.co.kr/sign-in')
+
+
+@blueprint.route('/send-email', methods=['OPTIONS'], strict_slashes=True)
+async def options(request):
+    return json(None, status=200)
+
+
+@blueprint.route('/send-email', methods=['POST'], strict_slashes=True)
+async def post(request):
+    data = request.json
+
+    is_full = empty_validation(data)
+    if is_full is False:
+        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+    smtp = initial_smtp_instance()
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        send_question_mail,
+        args=[
+            smtp,
+            data['email'],
+            data['name'],
+            data['content'],
+        ])
+
+    return json(None, status=200)
