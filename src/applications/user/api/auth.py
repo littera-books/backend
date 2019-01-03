@@ -18,7 +18,7 @@ async def authenticate(request, *args, **kwargs):
 
     query_user = query_validation(db_session, User, email=data['email'])
     if query_user is None:
-        raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['none_user'])
+        raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['invalid_user'])
 
     if not query_user.is_active:
         raise exceptions.AuthenticationFailed(EXCEPTION_MESSAGE['inactive_user'])
