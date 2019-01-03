@@ -27,7 +27,7 @@ def get_message(addr, user_id, host, scheme):
     template = env.get_template('ActivateEmailTemplate.html')
 
     message = MIMEMultipart('alternative')
-    message['Subject'] = '[Littera] 가입 활성화 메일'
+    message['Subject'] = '[LITTERA] Account Activating Required'
     message['From'] = secret_json['EMAIL_HOST']
     message['To'] = addr
 
@@ -52,7 +52,7 @@ def get_reset_message(addr, password):
     template = env.get_template('ResetPasswordTemplate.html')
 
     message = MIMEMultipart('alternative')
-    message['Subject'] = '[Littera] 비밀번호 초기화 메일'
+    message['Subject'] = '[LITTERA] Your Password Reissued'
     message['From'] = secret_json['EMAIL_HOST']
     message['To'] = addr
 
