@@ -77,8 +77,8 @@ async def main(request):
 
 
 ssl = {
-    'cert': '../www.littera.co.kr/cert.pem',
-    'key': '../www.littera.co.kr/privkey.pem',
+    'cert': '/app/www.littera.co.kr/cert.pem',
+    'key': '/app/www.littera.co.kr/privkey.pem',
 }
 
 if __name__ == '__main__':
