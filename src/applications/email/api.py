@@ -35,7 +35,7 @@ async def get(request):
     finally:
         db_session.close()
 
-    return response.redirect('https://www.littera.co.kr/sign-in')
+    return response.redirect('https://www.littera.co.kr/login')
 
 
 @blueprint.route('/send-email', methods=['OPTIONS'], strict_slashes=True)

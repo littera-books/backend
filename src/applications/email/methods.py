@@ -56,7 +56,7 @@ def get_reset_message(addr, password):
     message['From'] = secret_json['EMAIL_HOST']
     message['To'] = addr
 
-    url = f'https://www.littera.co.kr/sign-in'
+    url = f'https://www.littera.co.kr/login'
 
     html = MIMEText(template.render(
         addr=addr,
