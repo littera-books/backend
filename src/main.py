@@ -76,10 +76,10 @@ async def main(request):
     return text('Welcome Littera API server')
 
 
-# ssl = {
-#     'cert': '/app/archive/www.littera.co.kr/cert1.pem',
-#     'key': '/app/archive/www.littera.co.kr/privkey1.pem',
-# }
+ssl = {
+    'cert': '/app/archive/www.littera.co.kr/cert1.pem',
+    'key': '/app/archive/www.littera.co.kr/privkey1.pem',
+}
 
 if __name__ == '__main__':
-    APP.run(host='0.0.0.0', port=8000)
+    APP.run(host='0.0.0.0', port=8000, ssl=ssl)
