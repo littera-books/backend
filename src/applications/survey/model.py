@@ -30,6 +30,9 @@ class Selection(Base):
 
 class SurveyResult(Base):
     __tablename__ = 'survey_result'
+    __mapper_args__ = {
+        'confirm_deleted_rows': False,
+    }
     user_id = Column(Integer, ForeignKey('littera_user.id'), primary_key=True)
     selection_id = Column(Integer, ForeignKey('selection.id'), primary_key=True)
     user = relationship('User', back_populates='survey_result')

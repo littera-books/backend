@@ -191,6 +191,10 @@ async def delete(request, user_id):
     if query_user.password != data['password']:
         return json({'message': EXCEPTION_MESSAGE['invalid_password']}, status=400)
 
+    for subscription in query_user.subscription:
+        db_session.delete(subscription)
+        db_session.commit()
+
     db_session.delete(query_user)
     db_session.commit()
     db_session.flush()

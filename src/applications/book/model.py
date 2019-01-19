@@ -7,6 +7,9 @@ from common.database import Base
 
 class Book(Base):
     __tablename__ = 'book'
+    __mapper_args__ = {
+        'confirm_deleted_rows': False,
+    }
     id = Column(Integer, primary_key=True)
     order = Column(Integer, unique=False, nullable=False, default=1)
     name = Column(String, unique=False, nullable=False)

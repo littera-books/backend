@@ -123,11 +123,10 @@ async def post(request):
     except sqlalchemy.exc.IntegrityError as e:
         error_message = e.orig.diag.message_detail
         db_session.rollback()
+        db_session.close()
         return json({
             'message': error_message
         }, status=400)
-    finally:
-        db_session.close()
 
     return json({
         'user_id': subscription.user_id,

@@ -9,6 +9,9 @@ from applications.message.model import Message
 
 class User(Base):
     __tablename__ = 'littera_user'
+    __mapper_args__ = {
+        'confirm_deleted_rows': False,
+    }
     id = Column(Integer, primary_key=True)
     first_name = Column(String(length=20), unique=False, nullable=True)
     last_name = Column(String(length=20), unique=False, nullable=True)
@@ -21,7 +24,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     admin = relationship(Message, back_populates='user')
     survey_result = relationship('SurveyResult', back_populates='user', cascade='all, delete-orphan')
-    subscription = relationship('Subscription', uselist=False, back_populates='user', cascade='all, delete-orphan')
+    subscription = relationship('Subscription', back_populates='user', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<User(email={self.email})>'

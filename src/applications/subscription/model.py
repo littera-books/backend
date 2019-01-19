@@ -7,7 +7,10 @@ from common.database import Base
 
 class Subscription(Base):
     __tablename__ = 'subscription'
-    id = Column(Integer, primary_key=True)
+    __mapper_args__ = {
+        'confirm_deleted_rows': False,
+    }
+    id = Column(Integer, primary_key=True, autoincrement=True)
     product_id = Column(Integer, ForeignKey('product.id'))
     user_id = Column(Integer, ForeignKey('littera_user.id'))
     first_name = Column(String(length=20), unique=False, nullable=True)
@@ -17,5 +20,5 @@ class Subscription(Base):
     phone = Column(String(length=20), unique=False, nullable=True)
     created_at = Column(DateTime(timezone=True), primary_key=True, server_default=func.now())
     product = relationship('Product', back_populates='subscription')
-    user = relationship('User', back_populates='subscription')
+    user = relationship('User', back_populates='subscription', cascade='all, delete-orphan', single_parent=True)
     book = relationship('Book', back_populates='subscription', cascade='all, delete-orphan')
