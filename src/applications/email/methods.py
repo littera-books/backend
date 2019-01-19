@@ -14,7 +14,7 @@ def initial_smtp_instance():
     return aiosmtplib.SMTP(
         hostname=secret_json['SMTP_HOST'],
         port=secret_json['SMTP_PORT'],
-        use_tls=True
+        use_tls=False
     )
 
 
@@ -95,7 +95,6 @@ def get_question_message(addr, name, content):
 async def send_activate_mail(smtp_instance, addr, user_id, host, scheme):
     await smtp_instance.connect()
     await smtp_instance.starttls()
-    await smtp_instance.ehlo()
     await smtp_instance.login(username=secret_json['EMAIL_HOST'], password=secret_json['EMAIL_PW'])
 
     message = get_message(addr, user_id, host, scheme)
@@ -107,7 +106,6 @@ async def send_activate_mail(smtp_instance, addr, user_id, host, scheme):
 async def send_reset_password_mail(smtp_instance, addr, password):
     await smtp_instance.connect()
     await smtp_instance.starttls()
-    await smtp_instance.ehlo()
     await smtp_instance.login(username=secret_json['EMAIL_HOST'], password=secret_json['EMAIL_PW'])
 
     message = get_reset_message(addr, password)
@@ -119,7 +117,6 @@ async def send_reset_password_mail(smtp_instance, addr, password):
 async def send_question_mail(smtp_instance, addr, name, content):
     await smtp_instance.connect()
     await smtp_instance.starttls()
-    await smtp_instance.ehlo()
     await smtp_instance.login(username=secret_json['EMAIL_HOST'], password=secret_json['EMAIL_PW'])
 
     message = get_question_message(addr, name, content)
