@@ -22,11 +22,7 @@ async def get(request):
     """
     상품 리스트 보기
     """
-    args = request.args
-    if args:
-        query_product = db_session.query(Product).order_by(Product.created_at).all()
-    else:
-        query_product = db_session.query(Product).filter_by(is_visible=True).order_by(Product.created_at).all()
+    query_product = db_session.query(Product).order_by(Product.created_at).all()
 
     result = {
         'length': len(query_product),
