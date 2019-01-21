@@ -2,6 +2,7 @@ import sqlalchemy
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sanic import Blueprint
 from sanic.response import json
+from sanic_jwt.decorators import protected
 
 from applications.email.methods import initial_smtp_instance, send_activate_mail, send_reset_password_mail
 from common.database import db_session
@@ -14,6 +15,7 @@ blueprint = Blueprint('User')
 
 
 @blueprint.route('/user', methods=['OPTIONS', 'GET'], strict_slashes=True)
+@protected(blueprint)
 async def get(request):
     """
     회원 리스트
@@ -85,6 +87,7 @@ async def options(request, user_id):
 
 
 @blueprint.route('/user/toggle-active/<user_id>', methods=['PATCH'], strict_slashes=True)
+@protected(blueprint)
 async def patch(request, user_id):
     """
     회원 활성화 토글
@@ -106,6 +109,7 @@ async def patch(request, user_id):
 
 
 @blueprint.route('/user/<user_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
+@protected(blueprint)
 async def get(request, user_id):
     """
     회원 정보 호출
@@ -129,6 +133,7 @@ async def get(request, user_id):
 
 
 @blueprint.route('/user/<user_id>', methods=['PUT'], strict_slashes=True)
+@protected(blueprint)
 async def put(request, user_id):
     """
     회원 정보 수정
@@ -179,6 +184,7 @@ async def put(request, user_id):
 
 
 @blueprint.route('/user/<user_id>', methods=['PATCH'], strict_slashes=True)
+@protected(blueprint)
 async def patch(request, user_id):
     """
     비밀번호 수정
@@ -203,6 +209,7 @@ async def patch(request, user_id):
 
 
 @blueprint.route('/user/<user_id>', methods=['DELETE'], strict_slashes=True)
+@protected(blueprint)
 async def delete(request, user_id):
     """
     회원 탈퇴
