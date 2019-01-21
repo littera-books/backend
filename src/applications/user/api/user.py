@@ -29,6 +29,7 @@ async def get(request):
         item = {
             'id': user.id,
             'email': user.email,
+            'is_active': user.is_active,
         }
         result['items'].append(item)
 
@@ -95,6 +96,8 @@ async def get(request, user_id):
         'extra_address': query_user.extra_address,
         'phone': query_user.phone,
         'email': query_user.email,
+        'created_at': query_user.created_at,
+        'is_active': query_user.is_active,
         'has_survey': True if len(query_user.survey_result) > 0 else False,
     }, status=200)
 
