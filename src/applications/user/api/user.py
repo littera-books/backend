@@ -79,6 +79,32 @@ async def post(request):
     }, status=201)
 
 
+@blueprint.route('/user/toggle-active/<user_id>', methods=['OPTIONS'], strict_slashes=True)
+async def options(request, user_id):
+    return json(None, status=200)
+
+
+@blueprint.route('/user/toggle-active/<user_id>', methods=['PATCH'], strict_slashes=True)
+async def patch(request, user_id):
+    """
+    회원 활성화 토글
+    """
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    if query_user.is_active is False:
+        query_user.is_active = True
+    else:
+        query_user.is_active = False
+
+    db_session.commit()
+    db_session.flush()
+    db_session.close()
+
+    return json({'message': SUCCEED_MESSAGE['patch_active']}, status=200)
+
+
 @blueprint.route('/user/<user_id>', methods=['OPTIONS', 'GET'], strict_slashes=True)
 async def get(request, user_id):
     """

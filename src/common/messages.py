@@ -1,5 +1,6 @@
 SUCCEED_MESSAGE = {
-    'patch_password': '비밀번호가 성공적으로 변경되었습니다'
+    'patch_password': '비밀번호가 성공적으로 변경되었습니다',
+    'patch_active': '활성화 상태가 성공적으로 변경되었습니다',
 }
 
 EXCEPTION_MESSAGE = {
