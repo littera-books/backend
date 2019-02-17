@@ -215,17 +215,19 @@ async def delete(request, user_id):
     회원 탈퇴
     """
     data = request.json
-
-    is_full = empty_validation(data)
-    if is_full is False:
-        return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+    is_admin = request.args.get('is_admin', 'false')
 
     query_user = query_validation(db_session, User, id=user_id)
     if query_user is None:
         return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
-    if query_user.password != data['password']:
-        return json({'message': EXCEPTION_MESSAGE['invalid_password']}, status=400)
+    if is_admin != 'true':
+        is_full = empty_validation(data)
+        if is_full is False:
+            return json({'message': EXCEPTION_MESSAGE['empty_value']}, status=400)
+
+        if query_user.password != data['password']:
+            return json({'message': EXCEPTION_MESSAGE['invalid_password']}, status=400)
 
     for subscription in query_user.subscription:
         db_session.delete(subscription)
