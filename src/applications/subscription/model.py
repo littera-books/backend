@@ -20,5 +20,5 @@ class Subscription(Base):
     phone = Column(String(length=20), unique=False, nullable=True)
     created_at = Column(DateTime(timezone=True), primary_key=True, server_default=func.now())
     product = relationship('Product', back_populates='subscription')
-    user = relationship('User', back_populates='subscription', cascade='all, delete-orphan', single_parent=True)
+    user = relationship('User', back_populates='subscription', single_parent=True)
     book = relationship('Book', back_populates='subscription', cascade='all, delete-orphan')

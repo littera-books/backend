@@ -96,6 +96,23 @@ async def get(request, user_id, subscription_id):
     return json(result, status=200)
 
 
+@blueprint.route('/subscription/<user_id>/<subscription_id>', methods=['DELETE'], strict_slashes=True)
+async def delete(request, user_id, subscription_id):
+    """
+    구독 삭제
+    """
+    query_subscription = query_validation(db_session, Subscription, id=subscription_id)
+    if query_subscription is None:
+        return json({'message': EXCEPTION_MESSAGE['none_product']}, status=400)
+
+    db_session.delete(query_subscription)
+    db_session.commit()
+    db_session.flush()
+    db_session.close()
+
+    return json(None, status=204)
+
+
 @blueprint.route('/subscription', methods=['OPTIONS'], strict_slashes=True)
 async def options(request):
     return json(None, status=200)
