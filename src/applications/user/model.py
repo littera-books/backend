@@ -22,6 +22,7 @@ class User(Base):
     password = Column(PasswordType(schemes=['pbkdf2_sha256']), unique=False, nullable=False)
     is_active = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    log = Column(Boolean, default=False)
     admin = relationship(Message, back_populates='user')
     survey_result = relationship('SurveyResult', back_populates='user', cascade='all, delete-orphan')
     subscription = relationship('Subscription', back_populates='user', cascade='all, delete-orphan')

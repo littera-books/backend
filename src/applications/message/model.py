@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Sequence, String, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, Sequence, String, Integer, DateTime, ForeignKey, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -12,6 +12,7 @@ class Message(Base):
     admin_id = Column(Integer, ForeignKey('littera_admin.id'), primary_key=True)
     body = Column(String)
     created_at = Column(DateTime(timezone=True), primary_key=True, server_default=func.now())
+    log = Column(Boolean, default=False)
     user = relationship('User', back_populates='admin')
     admin = relationship('Admin', back_populates='user')
 
