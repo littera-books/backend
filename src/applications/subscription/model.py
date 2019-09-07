@@ -3,6 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from common.database import Base
+from common.messages import LOG_MESSAGE
 
 
 class Subscription(Base):
@@ -19,7 +20,7 @@ class Subscription(Base):
     extra_address = Column(String, unique=False, nullable=True)
     phone = Column(String(length=20), unique=False, nullable=True)
     created_at = Column(DateTime(timezone=True), primary_key=True, server_default=func.now())
-    log = Column(Boolean, default=False)
+    log = Column(String, server_default=LOG_MESSAGE['add_subscription'], nullable=False)
     product = relationship('Product', back_populates='subscription')
     user = relationship('User', back_populates='subscription', single_parent=True)
     book = relationship('Book', back_populates='subscription', cascade='all, delete-orphan')

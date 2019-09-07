@@ -12,7 +12,6 @@ class Message(Base):
     admin_id = Column(Integer, ForeignKey('littera_admin.id'), primary_key=True)
     body = Column(String)
     created_at = Column(DateTime(timezone=True), primary_key=True, server_default=func.now())
-    log = Column(Boolean, default=False)
     user = relationship('User', back_populates='admin')
     admin = relationship('Admin', back_populates='user')
 

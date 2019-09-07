@@ -7,7 +7,7 @@ from sanic_jwt.decorators import protected
 from applications.email.methods import initial_smtp_instance, send_activate_mail, send_reset_password_mail
 from common.database import db_session
 from common.validation import empty_validation, query_validation, length_validation
-from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE
+from common.messages import SUCCEED_MESSAGE, EXCEPTION_MESSAGE, LOG_MESSAGE
 from common.random_seq import make_rand_seq
 from ..model import User
 
@@ -32,6 +32,7 @@ async def get(request):
             'id': user.id,
             'email': user.email,
             'is_active': user.is_active,
+            'log': user.log,
         }
         result['items'].append(item)
 
@@ -128,7 +129,40 @@ async def get(request, user_id):
         'email': query_user.email,
         'created_at': query_user.created_at,
         'is_active': query_user.is_active,
+        'log': query_user.log,
         'has_survey': True if len(query_user.survey_result) > 0 else False,
+    }, status=200)
+
+
+@blueprint.route('/user/<user_id>/check', methods=['OPTIONS'], strict_slashes=True)
+async def options(request, user_id):
+    return json(None, status=200)
+
+
+@blueprint.route('/user/<user_id>/check', methods=['POST'], strict_slashes=True)
+@protected(blueprint)
+async def post(request, user_id):
+    """
+    log = true로 변경
+    """
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+
+    try:
+        query_user.log = ''
+        db_session.commit()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
+        db_session.close()
+        return json({
+            'message': error_message
+        }, status=400)
+
+    return json({
+        'id': query_user.id,
+        'log': query_user.log,
     }, status=200)
 
 
@@ -166,6 +200,7 @@ async def put(request, user_id):
         query_user.address = data['address']
         query_user.extra_address = data['extra_address']
         query_user.phone = data['phone']
+        query_user.log = LOG_MESSAGE['changed_user']
         if data.get('email'):
             query_user.email = data['email']
         db_session.commit()

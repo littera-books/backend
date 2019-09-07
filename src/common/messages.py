@@ -21,3 +21,9 @@ EXCEPTION_MESSAGE = {
     'invalid_page': '잘못된 페이지 번호입니다',
     'already_exist': '이미 구독 중입니다',
 }
+
+LOG_MESSAGE = {
+    'created_user': 'created_user',
+    'changed_user': 'changed_user',
+    'add_subscription': 'add_subscription',
+}
