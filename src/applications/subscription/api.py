@@ -40,7 +40,6 @@ async def get(request, user_id):
             'extra_address': subscription.extra_address,
             'phone': subscription.phone,
             'created_at': subscription.created_at,
-            'log': subscription.log,
         }
 
         product = query_validation(db_session, Product, id=subscription.product_id)
