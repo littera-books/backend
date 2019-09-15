@@ -26,4 +26,5 @@ LOG_MESSAGE = {
     'created_user': 'created_user',
     'changed_user': 'changed_user',
     'add_subscription': 'add_subscription',
+    'add_survey': 'add_survey',
 }

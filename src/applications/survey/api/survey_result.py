@@ -1,9 +1,10 @@
+import sqlalchemy
 from sanic import Blueprint
 from sanic.response import json
 
 from common.database import db_session
 from common.validation import query_validation
-from common.messages import EXCEPTION_MESSAGE
+from common.messages import EXCEPTION_MESSAGE, LOG_MESSAGE
 from applications.user.model import User
 from ..model import Selection, SurveyResult
 
@@ -46,26 +47,41 @@ async def post(request, user_id):
 
     value_list = [i.split('-')[-1] for i in selection_value_list]
 
-    for i in value_list:
-        query_user = query_validation(db_session, User, id=user_id)
-        if query_user is None:
-            return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
+    query_user = query_validation(db_session, User, id=user_id)
+    if query_user is None:
+        return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
+    for i in value_list:
         query_selection = query_validation(db_session, Selection, id=i)
         if query_selection is None:
             return json({'message': EXCEPTION_MESSAGE['none_question']}, status=400)
 
-        survey_result = SurveyResult()
-        survey_result.user_id = query_user.id
-        survey_result.selection_id = query_selection.id
+        try:
+            survey_result = SurveyResult()
+            survey_result.user_id = query_user.id
+            survey_result.selection_id = query_selection.id
+            db_session.add(survey_result)
+            db_session.commit()
+        except sqlalchemy.exc.IntegrityError as e:
+            error_message = e.orig.diag.message_detail
+            db_session.rollback()
+            db_session.close()
+            return json({
+                'message': error_message
+            }, status=400)
 
-        db_session.add(survey_result)
+    try:
+        query_user.log = LOG_MESSAGE['add_survey']
         db_session.commit()
-        db_session.flush()
+    except sqlalchemy.exc.IntegrityError as e:
+        error_message = e.orig.diag.message_detail
+        db_session.rollback()
         db_session.close()
-
-    result_user = query_validation(db_session, User, id=user_id)
+        return json({
+            'message': error_message
+        }, status=400)
 
     return json({
-        'user': result_user.id,
+        'user': query_user.id,
+        'log': query_user.log,
     }, status=201)
