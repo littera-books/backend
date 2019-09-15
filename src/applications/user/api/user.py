@@ -1,4 +1,5 @@
 import sqlalchemy
+from sqlalchemy import desc
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sanic import Blueprint
 from sanic.response import json
@@ -20,7 +21,7 @@ async def get(request):
     """
     회원 리스트
     """
-    query_user = db_session.query(User).order_by(User.created_at).all()
+    query_user = db_session.query(User).order_by(desc(User.log), User.is_active, User.created_at).all()
 
     result = {
         'length': len(query_user),

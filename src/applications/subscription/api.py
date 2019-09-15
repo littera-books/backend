@@ -4,7 +4,7 @@ from sanic.response import json
 
 from common.database import db_session
 from common.validation import empty_validation, query_validation
-from common.messages import EXCEPTION_MESSAGE
+from common.messages import EXCEPTION_MESSAGE, LOG_MESSAGE
 
 from applications.user.model import User
 from applications.product.model import Promotion, Product
@@ -40,6 +40,7 @@ async def get(request, user_id):
             'extra_address': subscription.extra_address,
             'phone': subscription.phone,
             'created_at': subscription.created_at,
+            'log': subscription.log,
         }
 
         product = query_validation(db_session, Product, id=subscription.product_id)
@@ -134,6 +135,7 @@ async def post(request):
         return json({'message': EXCEPTION_MESSAGE['none_user']}, status=400)
 
     try:
+        query_user.log = LOG_MESSAGE['add_subscription']
         subscription = Subscription(**data)
         db_session.add(subscription)
         db_session.commit()
