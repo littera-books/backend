@@ -53,6 +53,7 @@ async def post(request):
 
     try:
         user = User(**data)
+        user.log = LOG_MESSAGE['created_user']
         db_session.add(user)
         db_session.commit()
     except sqlalchemy.exc.IntegrityError as e:
