@@ -2,7 +2,7 @@ aiohttp==3.4.4
 aiosmtplib==1.0.3
 alembic==1.0.5
 APScheduler==3.5.3
-Jinja2==2.10
+Jinja2==2.11.3
 passlib==1.7.1
 psycopg2==2.7.5
 sanic==0.8.1
